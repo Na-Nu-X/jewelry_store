@@ -1,0 +1,201 @@
+@use 'styles/mixins' as *;
+
+.section--soft {
+  @include section($color-surface-soft);
+}
+
+/* Feature ------------------------------------------------------------------*/
+.feature {
+  display: grid;
+  gap: $space-8;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1fr;
+    gap: $space-10;
+  }
+
+  &__image {
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    border-radius: $radius-sm;
+    @include macro-zoom(1.05);
+
+    img {
+      @include cover-image;
+    }
+  }
+
+  &__copy h2 {
+    margin-bottom: $space-4;
+  }
+}
+
+.ticks {
+  @include reset-list;
+  display: grid;
+  gap: $space-3;
+  margin: $space-6 0 $space-7;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  app-icon {
+    color: $color-gold;
+  }
+}
+
+/* Form layout --------------------------------------------------------------*/
+.form-layout {
+  display: grid;
+  gap: $space-8;
+  scroll-margin-top: $header-height;
+
+  @include respond-to(lg) {
+    grid-template-columns: 0.8fr 1.4fr;
+    gap: $space-10;
+    align-items: start;
+  }
+}
+
+.form-aside {
+  @include respond-to(lg) {
+    position: sticky;
+    top: calc(#{$header-height} + #{$space-7});
+  }
+
+  h2 {
+    margin-bottom: $space-4;
+  }
+}
+
+.aside-list {
+  @include reset-list;
+  display: grid;
+  gap: $space-3;
+  margin-top: $space-6;
+  font-size: 0.9rem;
+  color: $color-text-muted;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  app-icon {
+    color: $color-gold;
+  }
+}
+
+/* Stepper ------------------------------------------------------------------*/
+.stepper {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: $space-7;
+  @include hairline;
+
+  &__item {
+    @include reset-button;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-2;
+    width: 100%;
+    padding-bottom: $space-4;
+    color: $color-text-subtle;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: transparent;
+      transition: background-color $duration;
+    }
+
+    &.is-active {
+      color: $color-text;
+
+      &::after {
+        background: $color-gold;
+      }
+
+      .stepper__dot {
+        border-color: $color-gold;
+        color: $color-gold-hover;
+      }
+    }
+
+    &.is-done .stepper__dot {
+      background: $color-emerald;
+      border-color: $color-emerald;
+      color: #fff;
+    }
+  }
+
+  &__dot {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    font-size: 0.82rem;
+    border: 1px solid $color-border-strong;
+    border-radius: 50%;
+
+    app-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+
+    @include respond-below(sm) {
+      display: none;
+    }
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: $space-5;
+    padding: 0;
+  }
+}
+
+.choice--compact {
+  flex-direction: row;
+  padding: $space-3 $space-4;
+
+  .choice__title {
+    font-size: 0.9rem;
+  }
+}
+
+.link-btn {
+  @include reset-button;
+  align-self: flex-start;
+  color: $color-gold-hover;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -122,6 +122,23 @@ export const SITE_CONFIG = {
     },
   ] satisfies readonly Testimonial[],
 
+  /** Story shown on the atelier page. */
+  atelier: {
+    headline: 'Tri desaťročia pri zlatníckom stole',
+    founder: 'Majster zlatník Ján Aurel',
+    founderRole: 'Zakladateľ ateliéru, člen Cechu zlatníkov a klenotníkov',
+    story: [
+      'Náš ateliér vznikol v roku 1998 v malej dielni na Panskej ulici. Dodnes v nej pracujeme rovnako – ručne, s lupou na oku a s úctou k materiálu, ktorý prežije generácie.',
+      'Každý šperk prechádza rukami zlatníka od prvej skice až po finálne leštenie. Spájame tradičné techniky – kovanie, ručné osadzovanie kameňov a gravírovanie – s presnosťou 3D modelovania.',
+      'Pracujeme výhradne s puncovaným zlatom a platinou a s diamantmi s nezávislým certifikátom. Recyklované zlato z výkupu zodpovedne vraciame do obehu.',
+    ],
+    values: [
+      { title: 'Ručná práca', text: 'Žiadna sériová výroba. Každý kus vzniká v našej dielni pod dohľadom majstra.', icon: 'hammer' },
+      { title: 'Poctivé materiály', text: 'Puncované zlato 14k a 18k, platina 950 a certifikované drahokamy z etických zdrojov.', icon: 'diamond' },
+      { title: 'Vzťah na celý život', text: 'Doživotný servis, čistenie zadarmo a šperky, ktoré sa dedia ďalej.', icon: 'sparkle' },
+    ],
+  },
+
   /** Indicative buyback prices shown in the gold calculator (EUR / g). */
   buyback: {
     updatedAt: '18. 11. 2026',
