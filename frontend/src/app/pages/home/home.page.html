@@ -1,0 +1,215 @@
+<!-- HERO ------------------------------------------------------------------>
+<section class="hero">
+  <div class="hero__inner container">
+    <div class="hero__copy fade-up">
+      <span class="eyebrow">{{ config.brand.wordmarkAccent }} · od {{ config.brand.foundedYear }}</span>
+      <h1>Šperky, ktoré pretrvajú <em>generácie</em></h1>
+      <p class="lead">
+        Zásnubné prstene, svadobné obrúčky a klenoty ručne vyrábané v našom ateliéri – z puncovaného zlata
+        a certifikovaných diamantov.
+      </p>
+      <div class="hero__ctas">
+        <a routerLink="/kolekcia" class="btn btn--primary">Objaviť kolekciu <app-icon name="arrow-right" /></a>
+        <a routerLink="/na-mieru" class="btn btn--outline">Šperk na mieru</a>
+      </div>
+
+      <nav class="hero__categories" aria-label="Rýchle odkazy na kategórie">
+        @if (categories.hasValue()) {
+          @for (cat of categories.value(); track cat.slug) {
+            <a [routerLink]="['/kolekcia']" [queryParams]="{ category: cat.slug }" class="chip">{{ cat.name }}</a>
+          }
+        } @else {
+          <a routerLink="/kolekcia" [queryParams]="{ category: 'zasnubne-prstene' }" class="chip">Zásnubné prstene</a>
+          <a routerLink="/kolekcia" [queryParams]="{ category: 'svadobne-obrucky' }" class="chip">Svadobné obrúčky</a>
+        }
+      </nav>
+    </div>
+
+    <div class="hero__visual">
+      <div class="hero__image">
+        <img [src]="heroImage" alt="Prsteň s diamantom v halo osadení" fetchpriority="high" width="1600" height="2000" />
+      </div>
+      <div class="hero__float">
+        <img [src]="config.images.heroSecondary | sized: 240" alt="" width="240" height="240" />
+        <div>
+          <span class="eyebrow">Klasik Solitaire</span>
+          <strong>Diamant 1,00 ct · GIA</strong>
+          <a routerLink="/kolekcia" [queryParams]="{ category: 'zasnubne-prstene' }" class="link-underline">Zásnubné prstene</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="metrics container">
+    @for (m of config.trustMetrics; track m.label) {
+      <li>
+        <strong class="num">{{ m.value }}</strong>
+        <span>{{ m.label }}</span>
+      </li>
+    }
+  </ul>
+</section>
+
+<!-- FEATURED -------------------------------------------------------------->
+<section class="section">
+  <div class="container">
+    <div class="split-head">
+      <div class="section-head">
+        <span class="eyebrow">Výber zlatníka</span>
+        <h2>Vybrané klenoty</h2>
+        <p class="lead">Kúsky, ktoré si naši klienti zamilovali – každý s certifikátom pravosti a puncom.</p>
+      </div>
+      <a routerLink="/kolekcia" class="link-underline">Celá kolekcia <app-icon name="arrow-right" /></a>
+    </div>
+
+    @if (featured.isLoading()) {
+      <div class="grid">
+        @for (s of skeletons; track $index) {
+          <app-card-skeleton />
+        }
+      </div>
+    } @else if (featured.error()) {
+      <p class="alert alert--error">
+        Kolekciu sa momentálne nepodarilo načítať. Skúste obnoviť stránku alebo nás kontaktujte telefonicky.
+      </p>
+    } @else {
+      <div class="grid">
+        @for (item of featured.value(); track item.id; let i = $index) {
+          <app-jewelry-card [item]="item" [priority]="i < 4" />
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- CATEGORIES ------------------------------------------------------------>
+<section class="section--soft">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Kategórie šperkov</span>
+      <h2>Pre každý výnimočný okamih</h2>
+    </div>
+    <div class="categories">
+      @if (categories.hasValue()) {
+        @for (cat of categories.value(); track cat.slug; let i = $index) {
+          <a
+            class="category"
+            [class.category--wide]="i === 0"
+            [routerLink]="['/kolekcia']"
+            [queryParams]="{ category: cat.slug }"
+          >
+            <img [src]="cat.cover_image_url | sized: (i === 0 ? 1200 : 700)" [alt]="cat.name" loading="lazy" />
+            <div class="category__overlay">
+              <span class="category__count num">{{ cat.item_count }} {{ cat.item_count === 1 ? 'šperk' : cat.item_count < 5 ? 'šperky' : 'šperkov' }}</span>
+              <h3>{{ cat.name }}</h3>
+              <span class="category__cta">Prezrieť <app-icon name="arrow-right" /></span>
+            </div>
+          </a>
+        }
+      } @else if (categories.isLoading()) {
+        @for (s of [1, 2, 3, 4, 5, 6]; track s) {
+          <div class="category skeleton" [class.category--wide]="s === 1"></div>
+        }
+      }
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE ------------------------------------------------------------->
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Remeselná garancia</span>
+      <h2>Istota, ktorú si zaslúžite</h2>
+      <p class="lead">Kupujete priamo od zlatníka – bez sprostredkovateľov, s plnou zodpovednosťou za každý detail.</p>
+    </div>
+    <ul class="guarantees">
+      @for (g of guarantees; track g.title) {
+        <li>
+          <span class="guarantees__icon"><app-icon [name]="g.icon" /></span>
+          <h3>{{ g.title }}</h3>
+          <p>{{ g.text }}</p>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- BESPOKE BANNER -------------------------------------------------------->
+<section class="bespoke">
+  <div class="bespoke__image">
+    <img [src]="config.images.bespoke | sized: 1400" alt="Ručne vyrobené prstene v ateliéri" loading="lazy" />
+  </div>
+  <div class="bespoke__content">
+    <span class="eyebrow">Ateliér na mieru</span>
+    <h2>Šperky a obrúčky <em>na mieru</em></h2>
+    <p>
+      Navrhneme a ručne vyrobíme šperk, ktorý bude len váš. Od osobnej konzultácie a 3D návrhu cez výber kameňa až po
+      puncovanie – za 3 až 5 týždňov.
+    </p>
+    <ol class="bespoke__steps">
+      <li><span class="num">01</span> Konzultácia & 3D návrh</li>
+      <li><span class="num">02</span> Výber zlata a drahokamov</li>
+      <li><span class="num">03</span> Ručná zlatnícka výroba</li>
+      <li><span class="num">04</span> Puncovanie a odovzdanie</li>
+    </ol>
+    <div class="bespoke__ctas">
+      <a routerLink="/na-mieru" class="btn btn--gold">Navrhnúť šperk <app-icon name="arrow-right" /></a>
+      <a routerLink="/atelier" class="btn btn--light">Konzultácia v ateliéri</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS ---------------------------------------------------------->
+<section class="section--soft">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Príbehy klientov</span>
+      <h2>Šperky s osobným príbehom</h2>
+    </div>
+    <div class="stories">
+      @for (t of config.testimonials; track t.author) {
+        <figure class="story">
+          <span class="story__stars" aria-label="Hodnotenie 5 z 5">★★★★★</span>
+          <blockquote>„{{ t.quote }}“</blockquote>
+          <figcaption>
+            <strong>{{ t.author }}</strong>
+            <span>{{ t.context }}</span>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- VISIT ----------------------------------------------------------------->
+<section class="section visit">
+  <div class="container visit__inner">
+    <div>
+      <span class="eyebrow">Navštívte nás</span>
+      <h2>Butik a ateliér v srdci mesta</h2>
+      <p class="lead">
+        Šperky si môžete vyskúšať v pokoji našej predajne. Na osobnú konzultáciu si vyhradíme čas len pre vás.
+      </p>
+      <a routerLink="/atelier" class="btn btn--primary">Dohodnúť konzultáciu</a>
+    </div>
+    <div class="visit__card">
+      <p class="visit__address">
+        <app-icon name="pin" />
+        <span>
+          {{ config.contact.address.street }}<br />
+          <span class="num">{{ config.contact.address.zip }}</span> {{ config.contact.address.city }}
+        </span>
+      </p>
+      <dl>
+        @for (h of config.openingHours; track h.days) {
+          <div>
+            <dt>{{ h.days }}</dt>
+            <dd class="num">{{ h.hours }}</dd>
+          </div>
+        }
+      </dl>
+      <a [href]="config.contact.phoneHref" class="link-underline num"><app-icon name="phone" /> {{ config.contact.phone }}</a>
+    </div>
+  </div>
+</section>

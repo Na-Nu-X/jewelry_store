@@ -1,0 +1,552 @@
+@use 'styles/mixins' as *;
+
+/* Hero ---------------------------------------------------------------------*/
+.hero {
+  position: relative;
+  padding-top: $space-7;
+  background:
+    radial-gradient(1200px 500px at 85% 0%, rgba(184, 147, 82, 0.1), transparent 60%),
+    $color-bg;
+
+  @include respond-to(lg) {
+    padding-top: $space-9;
+  }
+
+  &__inner {
+    display: grid;
+    gap: $space-8;
+    align-items: center;
+
+    @include respond-to(lg) {
+      grid-template-columns: 1.05fr 1fr;
+      gap: $space-10;
+    }
+  }
+
+  &__copy {
+    h1 {
+      margin-bottom: $space-5;
+
+      em {
+        color: $color-gold-hover;
+      }
+    }
+
+    .lead {
+      max-width: 520px;
+    }
+  }
+
+  &__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-3;
+    margin-top: $space-6;
+  }
+
+  &__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+    margin-top: $space-7;
+    padding-top: $space-5;
+    @include hairline(top);
+  }
+
+  &__visual {
+    position: relative;
+  }
+
+  &__image {
+    aspect-ratio: 4 / 5;
+    max-height: 72vh;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 200px 200px $radius $radius; // arched editorial frame
+    background: $color-surface-soft;
+
+    img {
+      @include cover-image;
+      animation: hero-zoom 14s $ease-luxe both;
+
+      @include reduced-motion {
+        animation: none;
+      }
+    }
+  }
+
+  &__float {
+    position: absolute;
+    left: -$space-4;
+    bottom: $space-7;
+    display: none;
+    align-items: center;
+    gap: $space-4;
+    padding: $space-3;
+    padding-right: $space-6;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    border-radius: $radius;
+    box-shadow: $shadow-lift;
+    animation: fade-up $duration-slow 400ms $ease-out both;
+
+    @include respond-to(md) {
+      display: flex;
+    }
+
+    @include respond-to(xl) {
+      left: -$space-9;
+    }
+
+    img {
+      width: 76px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: $radius-sm;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+    }
+
+    .eyebrow {
+      margin: 0;
+      font-size: 0.6rem;
+    }
+
+    strong {
+      font-family: $font-serif;
+      font-size: 1.15rem;
+      font-weight: $font-weight-medium;
+    }
+
+    .link-underline {
+      font-size: 0.64rem;
+    }
+  }
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.metrics {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: $space-9;
+  border-top: 1px solid $color-border;
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    padding: $space-6 $space-3;
+    text-align: center;
+
+    &:not(:last-child) {
+      border-right: 1px solid $color-border;
+    }
+
+    &:nth-child(2) {
+      @include respond-below(lg) {
+        border-right: 0;
+      }
+    }
+  }
+
+  strong {
+    font-family: $font-serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: $font-weight-regular;
+    line-height: 1;
+    color: $color-gold-hover;
+  }
+
+  span {
+    font-size: 0.8rem;
+    color: $color-text-muted;
+  }
+}
+
+/* Featured -----------------------------------------------------------------*/
+.split-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-5;
+  margin-bottom: $space-8;
+
+  .section-head {
+    margin-bottom: 0;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-7 $space-4;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $space-8 $space-5;
+  }
+
+  @include respond-to(xl) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Categories ---------------------------------------------------------------*/
+.section--soft {
+  @include section($color-surface-soft);
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-3;
+
+  @include respond-to(md) {
+    gap: $space-4;
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 260px;
+  }
+}
+
+.category {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: $radius-sm;
+  background: $color-border;
+  color: #fff;
+  @include macro-zoom(1.06);
+
+  @include respond-to(lg) {
+    aspect-ratio: auto;
+  }
+
+  &--wide {
+    grid-column: span 2;
+    aspect-ratio: 16 / 10;
+
+    @include respond-to(lg) {
+      grid-row: span 2;
+      aspect-ratio: auto;
+    }
+
+    h3 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem) !important;
+    }
+  }
+
+  img {
+    @include cover-image;
+    position: absolute;
+    inset: 0;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: $space-1;
+    padding: $space-4;
+    background: linear-gradient(180deg, transparent 40%, rgba(26, 24, 23, 0.72));
+
+    @include respond-to(md) {
+      padding: $space-6;
+    }
+
+    h3 {
+      color: #fff;
+      font-size: clamp(1.25rem, 2vw, 1.6rem);
+    }
+  }
+
+  &__count {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    margin-top: $space-2;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $color-gold-soft;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all $duration $ease-luxe;
+  }
+
+  &:hover &__cta,
+  &:focus-visible &__cta {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Guarantees ---------------------------------------------------------------*/
+.guarantees {
+  @include reset-list;
+  display: grid;
+  gap: $space-6;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+
+    li + li {
+      border-left: 1px solid $color-border;
+    }
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: $space-4 $space-5;
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: $space-5;
+    border: 1px solid $color-gold;
+    border-radius: 50%;
+    color: $color-gold;
+
+    app-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: $space-3;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: $color-text-muted;
+  }
+}
+
+/* Bespoke banner -----------------------------------------------------------*/
+.bespoke {
+  display: grid;
+  background: $color-emerald;
+  color: rgba(255, 255, 255, 0.82);
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1fr;
+    min-height: 620px;
+  }
+
+  &__image {
+    min-height: 320px;
+    position: relative;
+
+    img {
+      @include cover-image;
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: $space-9 $gutter;
+
+    @include respond-to(md) {
+      padding: $space-10 $space-10;
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: $space-5;
+
+      em {
+        color: $color-gold;
+      }
+    }
+
+    p {
+      max-width: 520px;
+      line-height: 1.8;
+    }
+  }
+
+  &__steps {
+    @include reset-list;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-4 $space-5;
+    margin: $space-6 0 $space-7;
+
+    li {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: $space-3;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 0.9rem;
+      color: #fff;
+    }
+
+    span {
+      font-family: $font-serif;
+      font-size: 1.25rem;
+      color: $color-gold;
+    }
+  }
+
+  &__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-3;
+  }
+}
+
+/* Stories ------------------------------------------------------------------*/
+.stories {
+  display: grid;
+  gap: $space-5;
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.story {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: $space-7 $space-6;
+  @include card-surface;
+
+  &__stars {
+    color: $color-gold;
+    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    margin-bottom: $space-4;
+  }
+
+  blockquote {
+    margin: 0 0 $space-6;
+    font-family: $font-serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: $color-text;
+  }
+
+  figcaption {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    padding-top: $space-4;
+    @include hairline(top);
+
+    strong {
+      font-weight: $font-weight-medium;
+    }
+
+    span {
+      font-size: 0.82rem;
+      color: $color-text-muted;
+    }
+  }
+}
+
+/* Visit --------------------------------------------------------------------*/
+.visit__inner {
+  display: grid;
+  gap: $space-8;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1.2fr 1fr;
+  }
+
+  h2 {
+    margin-bottom: $space-4;
+  }
+
+  .lead {
+    max-width: 520px;
+    margin-bottom: $space-6;
+  }
+}
+
+.visit__card {
+  padding: $space-7;
+  @include card-surface;
+
+  dl {
+    margin: $space-5 0;
+  }
+
+  dl div {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-2 0;
+    font-size: 0.9rem;
+    @include hairline;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.visit__address {
+  display: flex;
+  gap: $space-3;
+  margin: 0;
+  font-family: $font-serif;
+  font-size: 1.3rem;
+  line-height: 1.4;
+
+  app-icon {
+    color: $color-gold;
+    margin-top: 4px;
+  }
+}
