@@ -18,7 +18,7 @@ NO_THROTTLE = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "jewelry.pagination.CatalogPagination",
     "PAGE_SIZE": 24,
     **NO_THROTTLE,
 })
@@ -141,3 +141,8 @@ class JewelryApiTests(APITestCase):
 
     def test_submissions_are_write_only(self):
         self.assertEqual(self.client.get("/api/orders/").status_code, 405)
+
+    def test_page_size_param(self):
+        res = self.client.get("/api/jewelry/", {"page_size": 5})
+        self.assertEqual(len(res.data["results"]), 5)
+        self.assertIsNotNone(res.data["next"])
