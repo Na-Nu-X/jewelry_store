@@ -1,0 +1,275 @@
+<div class="backdrop" [class.is-open]="ui.bagOpen()" (click)="ui.closeBag()" aria-hidden="true"></div>
+
+<aside
+  #panel
+  class="drawer"
+  [class.is-open]="ui.bagOpen()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="bag-title"
+  tabindex="-1"
+  [attr.inert]="ui.bagOpen() ? null : ''"
+>
+  <header class="drawer__head">
+    @if (ui.bagStep() === 'checkout') {
+      <button type="button" class="icon-btn" (click)="ui.bagStep.set('bag')" aria-label="Späť do košíka">
+        <app-icon name="arrow-left" />
+      </button>
+    }
+    <h2 id="bag-title">
+      @switch (ui.bagStep()) {
+        @case ('checkout') {
+          {{ isStore() ? 'Rezervácia v predajni' : 'Dokončenie objednávky' }}
+        }
+        @case ('success') {
+          Ďakujeme
+        }
+        @default {
+          Váš košík <span class="num muted">({{ bag.count() }})</span>
+        }
+      }
+    </h2>
+    <button type="button" class="icon-btn" (click)="ui.closeBag()" aria-label="Zavrieť košík">
+      <app-icon name="close" />
+    </button>
+  </header>
+
+  @switch (ui.bagStep()) {
+    <!-- STEP 1 · BAG ------------------------------------------------------>
+    @case ('bag') {
+      @if (bag.isEmpty()) {
+        <div class="empty">
+          <app-icon name="bag" />
+          <h3>Váš košík je zatiaľ prázdny</h3>
+          <p>Objavte zásnubné prstene, obrúčky a šperky, ktoré pretrvajú generácie.</p>
+          <a routerLink="/kolekcia" class="btn btn--primary" (click)="ui.closeBag()">Prezrieť kolekciu</a>
+        </div>
+      } @else {
+        <div class="drawer__body">
+          <ul class="lines">
+            @for (line of bag.lines(); track line.key) {
+              <li class="line">
+                <a [routerLink]="['/kolekcia', line.slug]" class="line__img" (click)="ui.closeBag()">
+                  <img [src]="thumb(line.imageUrl)" [alt]="line.name" width="96" height="120" loading="lazy" />
+                </a>
+                <div class="line__info">
+                  <div class="line__top">
+                    <div>
+                      <a [routerLink]="['/kolekcia', line.slug]" class="line__name" (click)="ui.closeBag()">{{
+                        line.name
+                      }}</a>
+                      <p class="line__sub num">{{ line.subtitle }}</p>
+                    </div>
+                    <button
+                      type="button"
+                      class="icon-btn line__remove"
+                      (click)="bag.remove(line.key)"
+                      [attr.aria-label]="'Odstrániť ' + line.name"
+                    >
+                      <app-icon name="trash" />
+                    </button>
+                  </div>
+
+                  <div class="line__options">
+                    @if (line.isRing) {
+                      <label class="mini-field">
+                        <span>Veľkosť</span>
+                        <select
+                          class="num"
+                          [class.is-missing]="!line.ringSize"
+                          [value]="line.ringSize ?? ''"
+                          (change)="onRingSize(line.key, $event)"
+                        >
+                          <option value="">Zvoľte</option>
+                          @for (s of ringSizes; track s) {
+                            <option [value]="s" [selected]="s === line.ringSize">{{ s }}</option>
+                          }
+                        </select>
+                      </label>
+                    }
+                    <label class="mini-field mini-field--grow">
+                      <span>Gravírovanie</span>
+                      <input
+                        type="text"
+                        maxlength="40"
+                        placeholder="Bez gravírovania"
+                        [value]="line.engraving"
+                        (change)="onEngraving(line.key, $event)"
+                      />
+                    </label>
+                  </div>
+
+                  <div class="line__bottom">
+                    <div class="qty" role="group" [attr.aria-label]="'Množstvo ' + line.name">
+                      <button type="button" (click)="bag.setQuantity(line.key, line.quantity - 1)" aria-label="Znížiť množstvo">
+                        <app-icon name="minus" />
+                      </button>
+                      <span class="num" aria-live="polite">{{ line.quantity }}</span>
+                      <button
+                        type="button"
+                        (click)="bag.setQuantity(line.key, line.quantity + 1)"
+                        [disabled]="line.quantity >= 10"
+                        aria-label="Zvýšiť množstvo"
+                      >
+                        <app-icon name="plus" />
+                      </button>
+                    </div>
+                    <span class="price">{{ line.unitPrice * line.quantity | eur }}</span>
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+
+          <fieldset class="fulfilment">
+            <legend class="field__label">Spôsob prevzatia</legend>
+            <label class="choice">
+              <input type="radio" name="fulfilment" [checked]="!isStore()" (change)="setMode('courier')" />
+              <span class="choice__title"><app-icon name="truck" /> Doručiť poisteným kuriérom</span>
+              <span class="choice__desc">{{ config.commerce.shippingNote }}</span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="fulfilment" [checked]="isStore()" (change)="setMode('store')" />
+              <span class="choice__title"><app-icon name="store" /> Rezervovať na osobnú obhliadku v predajni</span>
+              <span class="choice__desc">
+                Šperk vám pripravíme na {{ config.commerce.reservationHoldDays }} dni – {{ config.contact.address.street }},
+                {{ config.contact.address.city }}. Platíte až na mieste.
+              </span>
+            </label>
+          </fieldset>
+        </div>
+
+        <footer class="drawer__foot">
+          <dl class="summary">
+            <div>
+              <dt>Medzisúčet</dt>
+              <dd class="price">{{ bag.subtotal() | eur }}</dd>
+            </div>
+            <div>
+              <dt>{{ isStore() ? 'Osobný odber' : 'Poistené doručenie' }}</dt>
+              <dd>Zadarmo</dd>
+            </div>
+            <div class="summary__total">
+              <dt>Spolu s DPH</dt>
+              <dd class="price">{{ bag.total() | eur }}</dd>
+            </div>
+          </dl>
+          @if (error()) {
+            <p class="alert alert--error" role="alert">{{ error() }}</p>
+          }
+          <button type="button" class="btn btn--primary btn--block" (click)="goToCheckout()">
+            {{ isStore() ? 'Pokračovať k rezervácii' : 'Pokračovať k objednávke' }}
+            <app-icon name="arrow-right" />
+          </button>
+          <p class="foot-note"><app-icon name="gift" /> Každý šperk balíme do luxusnej darčekovej kazety s certifikátom.</p>
+        </footer>
+      }
+    }
+
+    <!-- STEP 2 · CHECKOUT -------------------------------------------------->
+    @case ('checkout') {
+      <form class="drawer__body checkout" [formGroup]="form" (ngSubmit)="submit()" novalidate id="checkout-form">
+        <p class="checkout__intro muted">
+          @if (isStore()) {
+            Po odoslaní vás do 24 hodín kontaktujeme a potvrdíme termín obhliadky. Rezervácia je nezáväzná.
+          } @else {
+            Po odoslaní vám pošleme potvrdenie s platobnými údajmi. Šperky skladom expedujeme do 2 pracovných dní.
+          }
+        </p>
+        <div class="field">
+          <label class="field__label" for="co-name">Meno a priezvisko</label>
+          <input id="co-name" class="field__control" formControlName="client_name" autocomplete="name" />
+          <app-field-error [control]="form.controls.client_name" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="co-email">E-mail</label>
+          <input id="co-email" type="email" class="field__control" formControlName="email" autocomplete="email" />
+          <app-field-error [control]="form.controls.email" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="co-phone">Telefón</label>
+          <input
+            id="co-phone"
+            type="tel"
+            class="field__control"
+            formControlName="phone"
+            autocomplete="tel"
+            placeholder="+421 9xx xxx xxx"
+          />
+          <app-field-error [control]="form.controls.phone" />
+        </div>
+        @if (!isStore()) {
+          <div class="field">
+            <label class="field__label" for="co-address">Doručovacia adresa</label>
+            <textarea
+              id="co-address"
+              class="field__control"
+              formControlName="delivery_address"
+              autocomplete="street-address"
+              rows="3"
+              placeholder="Ulica a číslo, PSČ, mesto"
+            ></textarea>
+            <app-field-error [control]="form.controls.delivery_address" />
+          </div>
+        }
+        <div class="field">
+          <label class="field__label" for="co-note">Poznámka <span class="optional">(nepovinné)</span></label>
+          <textarea
+            id="co-note"
+            class="field__control"
+            formControlName="note"
+            rows="3"
+            [placeholder]="isStore() ? 'Preferovaný deň a čas návštevy…' : 'Napr. darček – nepribaľovať doklad s cenou'"
+          ></textarea>
+        </div>
+        <label class="check">
+          <input type="checkbox" formControlName="consent" />
+          <span>Súhlasím so spracovaním osobných údajov na účel vybavenia objednávky. {{ config.legal.gdpr }}</span>
+        </label>
+        <app-field-error [control]="form.controls.consent" />
+      </form>
+
+      <footer class="drawer__foot">
+        <dl class="summary">
+          <div class="summary__total">
+            <dt>Spolu <span class="muted num">({{ bag.count() }} ks)</span></dt>
+            <dd class="price">{{ bag.total() | eur }}</dd>
+          </div>
+        </dl>
+        @if (error()) {
+          <p class="alert alert--error" role="alert">{{ error() }}</p>
+        }
+        <button
+          type="submit"
+          form="checkout-form"
+          class="btn btn--primary btn--block"
+          [class.is-loading]="submitting()"
+          [disabled]="submitting()"
+        >
+          {{ isStore() ? 'Odoslať rezerváciu' : 'Odoslať objednávku' }}
+        </button>
+      </footer>
+    }
+
+    <!-- STEP 3 · SUCCESS --------------------------------------------------->
+    @case ('success') {
+      <div class="success">
+        <span class="success__icon"><app-icon name="check" /></span>
+        @let order = confirmation();
+        @if (order?.order_type === 'rezervacia_predajna') {
+          <h3>Rezervácia bola prijatá</h3>
+          <p>
+            Šperk vám pripravíme v predajni. Do 24 hodín vás budeme kontaktovať a dohodneme si termín osobnej obhliadky.
+          </p>
+        } @else {
+          <h3>Objednávka bola prijatá</h3>
+          <p>Potvrdenie s platobnými údajmi sme vám poslali e-mailom. Ďakujeme za dôveru.</p>
+        }
+        @if (order) {
+          <p class="success__ref num">Číslo: <strong>#{{ order.id }}</strong> · {{ order.total_price | eur }}</p>
+        }
+        <button type="button" class="btn btn--outline" (click)="ui.closeBag()">Pokračovať v prehliadaní</button>
+      </div>
+    }
+  }
+</aside>

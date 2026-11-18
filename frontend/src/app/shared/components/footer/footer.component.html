@@ -1,0 +1,87 @@
+<footer class="footer">
+  <div class="footer__assurance">
+    <div class="container footer__assurance-inner">
+      <div class="assure">
+        <app-icon name="stamp" />
+        <div>
+          <strong>Puncový úrad SR</strong>
+          <span>Každý šperk z drahého kovu je úradne overený a puncovaný.</span>
+        </div>
+      </div>
+      <div class="assure">
+        <app-icon name="diamond" />
+        <div>
+          <strong>Certifikáty GIA · IGI · HRD</strong>
+          <span>Diamanty nad 0,30 ct s nezávislým gemologickým certifikátom.</span>
+        </div>
+      </div>
+      <div class="assure">
+        <app-icon name="sparkle" />
+        <div>
+          <strong>Doživotný servis</strong>
+          <span>Čistenie a kontrola osadenia kameňov zadarmo, navždy.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container footer__main">
+    <div class="footer__brand">
+      <span class="footer__wordmark">{{ config.brand.wordmark }}</span>
+      <span class="footer__accent">{{ config.brand.wordmarkAccent }}</span>
+      <p>{{ config.brand.description }}</p>
+      <div class="footer__social">
+        @for (s of config.social; track s.url) {
+          <a [href]="s.url" target="_blank" rel="noopener" class="icon-btn" [attr.aria-label]="s.label">
+            <app-icon [name]="s.icon" />
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="footer__col">
+      <h3 class="footer__title">Butik & ateliér</h3>
+      <address>
+        {{ config.contact.address.street }}<br />
+        <span class="num">{{ config.contact.address.zip }}</span> {{ config.contact.address.city }}<br />
+        {{ config.contact.address.country }}
+      </address>
+      <a [href]="config.contact.phoneHref" class="num">{{ config.contact.phone }}</a>
+      <a [href]="'mailto:' + config.contact.email">{{ config.contact.email }}</a>
+      <a [href]="config.contact.mapUrl" target="_blank" rel="noopener" class="footer__map">Navigovať do predajne →</a>
+    </div>
+
+    <div class="footer__col">
+      <h3 class="footer__title">Otváracie hodiny</h3>
+      <dl class="hours">
+        @for (h of config.openingHours; track h.days) {
+          <div>
+            <dt>{{ h.days }}</dt>
+            <dd class="num">{{ h.hours }}</dd>
+          </div>
+        }
+      </dl>
+      <p class="footer__note">{{ config.openingHoursNote }}</p>
+    </div>
+
+    <div class="footer__col">
+      <h3 class="footer__title">Rýchle odkazy</h3>
+      <a routerLink="/kolekcia" [queryParams]="{ category: 'zasnubne-prstene' }">Zásnubné prstene</a>
+      <a routerLink="/kolekcia" [queryParams]="{ category: 'svadobne-obrucky' }">Svadobné obrúčky</a>
+      <a routerLink="/na-mieru">Šperky na mieru</a>
+      <a routerLink="/vykup-a-servis">Výkup zlata</a>
+      <a routerLink="/vykup-a-servis" fragment="servis">Zlatnícky servis</a>
+      <a routerLink="/atelier">Kontakt</a>
+    </div>
+  </div>
+
+  <div class="container footer__legal">
+    <p>{{ config.legal.hallmark }} {{ config.legal.certification }}</p>
+    <p>{{ config.legal.gdpr }}</p>
+    <p class="footer__company">
+      © {{ year }} {{ config.brand.legalName }} · IČO: <span class="num">{{ config.legal.ico }}</span> · DIČ:
+      <span class="num">{{ config.legal.dic }}</span> · IČ DPH: <span class="num">{{ config.legal.icDph }}</span> ·
+      {{ config.legal.registry }}
+    </p>
+  </div>
+</footer>

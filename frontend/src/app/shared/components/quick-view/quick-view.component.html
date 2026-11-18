@@ -1,0 +1,61 @@
+@let piece = item();
+<div class="overlay-backdrop" (click)="close()" aria-hidden="true"></div>
+<div class="modal qv" role="dialog" aria-modal="true" aria-labelledby="qv-title" tabindex="-1" style="--modal-width: 920px">
+  <button type="button" class="icon-btn qv__close" (click)="close()" aria-label="Zavrieť náhľad">
+    <app-icon name="close" />
+  </button>
+  <div class="qv__grid">
+    <div class="qv__media">
+      <img [src]="image()" [alt]="piece.name" width="1000" height="1250" />
+      @if (piece.badge !== 'none') {
+        <span class="badge qv__badge" [class]="badgeClass()">{{ piece.badge_display }}</span>
+      }
+    </div>
+    <div class="qv__info">
+      <span class="eyebrow">{{ piece.collection_name || piece.category.name }}</span>
+      <h2 id="qv-title">{{ piece.name }}</h2>
+      <p class="qv__sub num">{{ subtitle() }}</p>
+      <p class="qv__price price">{{ piece.base_price | eur }}</p>
+      <span class="availability" [class]="'availability--' + piece.availability">{{ piece.availability_display }}</span>
+
+      <dl class="qv__specs num">
+        <div>
+          <dt>Kov</dt>
+          <dd>{{ piece.metal_type_display }}</dd>
+        </div>
+        <div>
+          <dt>Rýdzosť</dt>
+          <dd>{{ piece.gold_purity }}</dd>
+        </div>
+        <div>
+          <dt>Kameň</dt>
+          <dd>
+            {{ piece.primary_gemstone_display }}
+            @if (piece.carat_weight) {
+              · {{ piece.carat_weight | decimal }} ct
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Kód</dt>
+          <dd>{{ piece.sku }}</dd>
+        </div>
+      </dl>
+
+      <div class="qv__actions">
+        <button type="button" class="btn btn--primary btn--block" [disabled]="soldOut()" (click)="primaryAction()">
+          @if (soldOut()) {
+            Vypredané
+          } @else if (piece.is_ring) {
+            Zvoliť veľkosť a pridať
+          } @else {
+            <app-icon name="bag" /> Pridať do košíka
+          }
+        </button>
+        <a [routerLink]="['/kolekcia', piece.slug]" class="link-underline" (click)="close()">
+          Zobraziť celý detail <app-icon name="arrow-right" />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

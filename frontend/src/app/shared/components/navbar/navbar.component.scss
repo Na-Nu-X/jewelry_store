@@ -1,0 +1,304 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: contents;
+}
+
+.announce {
+  background: $color-emerald;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+
+  &__inner {
+    @include container;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-6;
+    min-height: 36px;
+
+    @include respond-to(lg) {
+      justify-content: space-between;
+    }
+
+    span,
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-2;
+    }
+
+    > :not(:first-child) {
+      display: none;
+
+      @include respond-to(lg) {
+        display: inline-flex;
+      }
+    }
+  }
+
+  &__phone:hover {
+    color: #fff;
+  }
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  background: color-mix(in srgb, var(--color-bg), transparent 8%);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  @include hairline(bottom, transparent);
+  transition:
+    border-color $duration,
+    box-shadow $duration;
+
+  &.is-scrolled {
+    border-bottom-color: $color-border;
+    box-shadow: 0 10px 30px -24px rgba(26, 24, 23, 0.35);
+  }
+
+  &__inner {
+    @include container;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: $header-height-mobile;
+
+    @include respond-to(lg) {
+      height: $header-height;
+    }
+  }
+
+  &__menu {
+    justify-self: start;
+    margin-left: -10px;
+
+    @include respond-to(lg) {
+      display: none;
+    }
+  }
+
+  &__nav {
+    display: none;
+
+    @include respond-to(lg) {
+      display: flex;
+      gap: $space-6;
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+
+  &__actions {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    margin-right: -10px;
+
+    @include respond-to(lg) {
+      margin-right: 0;
+      gap: $space-2;
+    }
+  }
+
+  &__search {
+    display: none;
+
+    @include respond-to(md) {
+      display: inline-grid;
+    }
+  }
+
+  &__cta {
+    display: none;
+    margin-left: $space-3;
+
+    @include respond-to(xl) {
+      display: inline-flex;
+    }
+  }
+}
+
+.nav-link {
+  position: relative;
+  font-size: 0.76rem;
+  font-weight: $font-weight-medium;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+  padding: $space-2 0;
+  transition: color $duration-fast;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: $color-gold;
+    transform: scaleX(0);
+    transition: transform $duration $ease-luxe;
+  }
+
+  &:hover,
+  &.is-active {
+    color: $color-text;
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.wordmark {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  text-align: center;
+
+  &__name {
+    font-family: $font-serif;
+    font-size: 1.55rem;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.32em;
+    margin-right: -0.32em; // optical centring of tracking
+
+    @include respond-to(lg) {
+      font-size: 1.9rem;
+    }
+  }
+
+  &__accent {
+    margin-top: 6px;
+    font-size: 0.56rem;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: $color-gold;
+
+    @include respond-below(sm) {
+      display: none;
+    }
+  }
+}
+
+.bag-btn {
+  position: relative;
+
+  &__count {
+    position: absolute;
+    top: 5px;
+    right: 3px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: grid;
+    place-items: center;
+    font-size: 0.66rem;
+    font-weight: $font-weight-semibold;
+    line-height: 1;
+    color: #fff;
+    background: $color-gold;
+    border-radius: $radius-pill;
+    transition: transform $duration $ease-out;
+
+    &.is-bumped {
+      transform: scale(1.35);
+    }
+  }
+}
+
+/* Mobile drawer ------------------------------------------------------------*/
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: $z-drawer;
+  background: $color-overlay;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $duration;
+
+  &.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.mobile-nav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: $z-drawer + 1;
+  width: min(360px, 88vw);
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  padding: $space-5;
+  background: $color-bg;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform $duration-slow $ease-out;
+  visibility: hidden;
+
+  &.is-open {
+    transform: none;
+    visibility: visible;
+  }
+
+  @include respond-to(lg) {
+    display: none;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: $space-4;
+    @include hairline;
+
+    .wordmark__name {
+      font-family: $font-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.3em;
+    }
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+
+    a {
+      padding: $space-4 0;
+      font-family: $font-serif;
+      font-size: 1.6rem;
+      @include hairline;
+
+      &.is-active {
+        color: $color-gold-hover;
+      }
+    }
+  }
+
+  &__contact {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    margin-top: auto;
+    font-size: 0.88rem;
+    color: $color-text-muted;
+
+    a,
+    span {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+    }
+  }
+}

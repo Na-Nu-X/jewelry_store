@@ -1,0 +1,152 @@
+@if (mode() === 'modal') {
+  <div class="overlay-backdrop" (click)="closed.emit()" aria-hidden="true"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" tabindex="-1" style="--modal-width: 880px">
+    <div class="modal__head">
+      <div>
+        <span class="eyebrow">Sprievodca veľkosťou</span>
+        <h2 id="size-guide-title">Ako zistiť veľkosť prsteňa</h2>
+      </div>
+      <button type="button" class="icon-btn" (click)="closed.emit()" aria-label="Zavrieť sprievodcu">
+        <app-icon name="close" />
+      </button>
+    </div>
+    <div class="modal__body">
+      <ng-container *ngTemplateOutlet="content" />
+    </div>
+  </div>
+} @else {
+  <ng-container *ngTemplateOutlet="content" />
+}
+
+<ng-template #content>
+  <div class="guide">
+    <section class="converter" aria-label="Prevodník veľkosti prsteňa">
+      <div class="converter__tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          class="chip"
+          [attr.aria-selected]="measureMode() === 'diameter'"
+          [class.is-active]="measureMode() === 'diameter'"
+          (click)="setMode('diameter')"
+        >
+          Vnútorný priemer prsteňa
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="chip"
+          [attr.aria-selected]="measureMode() === 'circumference'"
+          [class.is-active]="measureMode() === 'circumference'"
+          (click)="setMode('circumference')"
+        >
+          Obvod prsta
+        </button>
+      </div>
+
+      <div class="converter__input">
+        <label class="field__label" for="ring-measure">
+          {{ measureMode() === 'diameter' ? 'Priemer v mm' : 'Obvod v mm' }}
+        </label>
+        <div class="converter__row">
+          <input
+            id="ring-measure-range"
+            type="range"
+            [min]="sliderBounds().min"
+            [max]="sliderBounds().max"
+            [step]="sliderBounds().step"
+            [value]="value()"
+            (input)="onInput($event)"
+            aria-label="Posuvník merania"
+          />
+          <input
+            id="ring-measure"
+            class="field__control num"
+            type="number"
+            inputmode="decimal"
+            [min]="sliderBounds().min"
+            [max]="sliderBounds().max"
+            [step]="sliderBounds().step"
+            [value]="value()"
+            (input)="onInput($event)"
+          />
+        </div>
+      </div>
+
+      <div class="result" aria-live="polite">
+        <div class="result__ring" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" />
+            <circle cx="50" cy="50" r="33" class="inner" />
+          </svg>
+          <span class="result__size num">{{ euSize() }}</span>
+        </div>
+        <div class="result__text">
+          <span class="eyebrow">Vaša veľkosť EU / SK</span>
+          <p class="result__main num">Veľkosť {{ euSize() }}</p>
+          <p class="result__meta num">
+            Priemer {{ diameter() | decimal }} mm · obvod {{ circumference() | decimal }} mm
+          </p>
+          @if (outOfRange()) {
+            <p class="result__warn">
+              Mimo bežného rozsahu 48–66. Radi vám vyrobíme prsteň na mieru – kontaktujte nás.
+            </p>
+          }
+          @if (mode() === 'modal') {
+            <button type="button" class="btn btn--primary btn--sm" (click)="useSize()">
+              Použiť veľkosť {{ euSize() }}
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="table-wrap" aria-label="Tabuľka veľkostí">
+      <table class="size-table num">
+        <thead>
+          <tr>
+            <th scope="col">EU / SK</th>
+            <th scope="col">Priemer (mm)</th>
+            <th scope="col">Obvod (mm)</th>
+            <th scope="col">US</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows; track row.eu) {
+            <tr [class.is-active]="row.eu === euSize()" (click)="selectRow(row)">
+              <th scope="row">{{ row.eu }}</th>
+              <td>{{ row.diameter | decimal }}</td>
+              <td>{{ row.circumference }}</td>
+              <td>{{ row.us }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="tips">
+      <h3>Ako zmerať veľkosť nenápadne</h3>
+      <ol>
+        <li>
+          <strong>Požičajte si prsteň.</strong> Vezmite prsteň, ktorý partnerka nosí na prstenníku, a odmerajte jeho
+          vnútorný priemer pravítkom – alebo ho obkreslite zvnútra na papier.
+        </li>
+        <li>
+          <strong>Odtlačok do mydla.</strong> Prsteň zatlačte do mydla či plastelíny – odtlačok nám prineste do predajne a
+          veľkosť určíme presne.
+        </li>
+        <li>
+          <strong>Spýtajte sa spojencov.</strong> Kamarátka alebo mama často veľkosť pozná – prípadne ju pri nakupovaní
+          „náhodou“ zistí.
+        </li>
+        <li>
+          <strong>Merajte večer a v teple.</strong> Prsty sú cez deň väčšie. Na dominantnej ruke býva veľkosť o pol čísla
+          vyššia; pri obrúčke širšej ako 5 mm zvoľte o 1 veľkosť viac.
+        </li>
+      </ol>
+      <p class="tips__note">
+        <app-icon name="info" /> Nie ste si istí? Prvú úpravu veľkosti do 30 dní od kúpy robíme <strong>zadarmo</strong>.
+      </p>
+    </section>
+  </div>
+</ng-template>

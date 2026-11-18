@@ -1,0 +1,91 @@
+<div class="announce" role="note">
+  <div class="announce__inner">
+    <span><app-icon name="shield" /> Puncované zlato · certifikované diamanty</span>
+    <span class="announce__mid"><app-icon name="truck" /> {{ config.commerce.shippingNote }}</span>
+    <a [href]="config.contact.phoneHref" class="announce__phone num">
+      <app-icon name="phone" /> {{ config.contact.phone }}
+    </a>
+  </div>
+</div>
+
+<header class="header" [class.is-scrolled]="scrolled()">
+  <div class="header__inner">
+    <button
+      type="button"
+      class="icon-btn header__menu"
+      (click)="toggleMobileNav()"
+      [attr.aria-expanded]="ui.mobileNavOpen()"
+      aria-controls="mobile-nav"
+      aria-label="Otvoriť menu"
+    >
+      <app-icon name="menu" />
+    </button>
+
+    <nav class="header__nav" aria-label="Hlavná navigácia">
+      @for (link of config.navigation; track link.path) {
+        <a [routerLink]="link.path" routerLinkActive="is-active" class="nav-link">{{ link.label }}</a>
+      }
+    </nav>
+
+    <a routerLink="/" class="wordmark" [attr.aria-label]="config.brand.name + ' – domov'">
+      <span class="wordmark__name">{{ config.brand.wordmark }}</span>
+      <span class="wordmark__accent">{{ config.brand.wordmarkAccent }}</span>
+    </a>
+
+    <div class="header__actions">
+      <a routerLink="/kolekcia" class="icon-btn header__search" aria-label="Prehľadávať kolekciu">
+        <app-icon name="search" />
+      </a>
+      <button
+        type="button"
+        class="icon-btn bag-btn"
+        (click)="ui.openBag()"
+        [attr.aria-label]="'Košík a rezervácie, počet položiek: ' + bag.count()"
+      >
+        <app-icon name="bag" />
+        @if (bag.count() > 0) {
+          <span class="bag-btn__count num" [class.is-bumped]="bump()">{{ bag.count() }}</span>
+        }
+      </button>
+      <a routerLink="/na-mieru" class="btn btn--primary btn--sm header__cta">Šperk na mieru</a>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile drawer -->
+<div
+  class="mobile-nav-backdrop"
+  [class.is-open]="ui.mobileNavOpen()"
+  (click)="ui.mobileNavOpen.set(false)"
+  aria-hidden="true"
+></div>
+<aside
+  id="mobile-nav"
+  class="mobile-nav"
+  [class.is-open]="ui.mobileNavOpen()"
+  [attr.aria-hidden]="!ui.mobileNavOpen()"
+  [attr.inert]="ui.mobileNavOpen() ? null : ''"
+  aria-label="Mobilné menu"
+>
+  <div class="mobile-nav__head">
+    <span class="wordmark__name">{{ config.brand.wordmark }}</span>
+    <button type="button" class="icon-btn" (click)="ui.mobileNavOpen.set(false)" aria-label="Zavrieť menu">
+      <app-icon name="close" />
+    </button>
+  </div>
+  <nav class="mobile-nav__links">
+    <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Domov</a>
+    @for (link of config.navigation; track link.path) {
+      <a [routerLink]="link.path" routerLinkActive="is-active">{{ link.label }}</a>
+    }
+  </nav>
+  <a routerLink="/na-mieru" class="btn btn--primary btn--block">Šperk na mieru</a>
+  <div class="mobile-nav__contact">
+    <a [href]="config.contact.phoneHref" class="num"><app-icon name="phone" /> {{ config.contact.phone }}</a>
+    <a [href]="'mailto:' + config.contact.email"><app-icon name="mail" /> {{ config.contact.email }}</a>
+    <span>
+      <app-icon name="pin" />
+      {{ config.contact.address.street }}, {{ config.contact.address.city }}
+    </span>
+  </div>
+</aside>

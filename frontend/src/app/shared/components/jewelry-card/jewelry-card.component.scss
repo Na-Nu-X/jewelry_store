@@ -1,0 +1,152 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.card {
+  position: relative;
+  height: 100%;
+
+  &__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: $color-surface-soft;
+    border-radius: $radius-sm;
+    @include macro-zoom(1.09);
+
+    img {
+      @include cover-image;
+    }
+
+    &::after {
+      // fine inner hairline frame
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(26, 24, 23, 0.04);
+      pointer-events: none;
+    }
+  }
+
+  &__badges {
+    position: absolute;
+    top: $space-3;
+    left: $space-3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding-top: $space-4;
+  }
+
+  &__collection {
+    @include eyebrow($color-text-subtle);
+    font-size: 0.62rem;
+    margin-bottom: $space-1;
+  }
+
+  &__title {
+    font-family: $font-serif;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    font-weight: $font-weight-medium;
+    transition: color $duration-fast;
+    @include line-clamp(2);
+  }
+
+  &__subtitle {
+    margin: $space-1 0 $space-3;
+    font-size: 0.82rem;
+    color: $color-text-muted;
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-2;
+    margin-top: auto;
+    padding-top: $space-3;
+    @include hairline(top);
+  }
+
+  &__price {
+    font-size: 1rem;
+    color: $color-text;
+  }
+
+  .availability {
+    font-size: 0.72rem;
+  }
+
+  &__quick {
+    @include reset-button;
+    position: absolute;
+    top: $space-3;
+    right: $space-3;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    height: 38px;
+    padding: 0 $space-3;
+    font-size: 0.68rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    border-radius: $radius-pill;
+    box-shadow: $shadow-soft;
+    transition:
+      opacity $duration $ease-luxe,
+      transform $duration $ease-luxe;
+
+    span {
+      display: none;
+    }
+
+    @media (hover: hover) {
+      opacity: 0;
+      transform: translateY(-6px);
+
+      span {
+        display: inline;
+      }
+    }
+
+    &:focus-visible {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (hover: hover) {
+    &:hover &__quick {
+      opacity: 1;
+      transform: none;
+    }
+
+    &:hover &__title {
+      color: $color-gold-hover;
+    }
+  }
+
+  &.is-sold-out img {
+    filter: grayscale(0.35);
+    opacity: 0.8;
+  }
+}

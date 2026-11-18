@@ -1,0 +1,50 @@
+@let piece = item();
+<article class="card" [class.is-sold-out]="soldOut()">
+  <a [routerLink]="['/kolekcia', piece.slug]" class="card__link">
+    <div class="card__media">
+      <img
+        [src]="image()"
+        [attr.srcset]="srcset()"
+        sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+        [alt]="piece.name + ' – ' + subtitle()"
+        [attr.loading]="priority() ? 'eager' : 'lazy'"
+        [attr.fetchpriority]="priority() ? 'high' : null"
+        decoding="async"
+        width="720"
+        height="900"
+      />
+      <div class="card__badges">
+        @if (piece.badge !== 'none') {
+          <span class="badge" [class]="badgeClass()">{{ piece.badge_display }}</span>
+        }
+        @if (soldOut()) {
+          <span class="badge badge--muted">Vypredané</span>
+        }
+      </div>
+    </div>
+
+    <div class="card__body">
+      @if (piece.collection_name) {
+        <span class="card__collection">{{ piece.collection_name }}</span>
+      }
+      <h3 class="card__title">{{ piece.name }}</h3>
+      <p class="card__subtitle num">{{ subtitle() }}</p>
+      <div class="card__footer">
+        <span class="price card__price">{{ piece.base_price | eur }}</span>
+        <span class="availability" [class]="'availability--' + piece.availability">{{
+          piece.availability_display
+        }}</span>
+      </div>
+    </div>
+  </a>
+
+  <button
+    type="button"
+    class="card__quick"
+    (click)="quickView($event)"
+    [attr.aria-label]="'Rýchly náhľad: ' + piece.name"
+  >
+    <app-icon name="eye" />
+    <span>Rýchly náhľad</span>
+  </button>
+</article>
