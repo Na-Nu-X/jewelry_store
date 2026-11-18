@@ -1,0 +1,210 @@
+@use 'mixins' as *;
+
+.form-grid {
+  display: grid;
+  gap: $space-5;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .field--full {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.field__label {
+  font-size: 0.72rem;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+
+  .optional {
+    font-weight: $font-weight-regular;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: $color-text-subtle;
+  }
+}
+
+.field__control {
+  width: 100%;
+  min-height: 50px;
+  padding: $space-3 $space-4;
+  font: inherit;
+  font-size: 1rem; // 16px prevents iOS zoom
+  color: $color-text;
+  background: $color-surface;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-sm;
+  transition:
+    border-color $duration-fast,
+    box-shadow $duration-fast;
+
+  &::placeholder {
+    color: $color-text-subtle;
+  }
+
+  &:hover {
+    border-color: $color-text-subtle;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-gold;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-gold), transparent 82%);
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: $color-danger;
+  }
+}
+
+textarea.field__control {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+select.field__control {
+  appearance: none;
+  padding-right: $space-8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%235C564F' stroke-width='1.4'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  cursor: pointer;
+}
+
+.field__hint {
+  font-size: 0.8rem;
+  color: $color-text-subtle;
+}
+
+.field__error {
+  font-size: 0.8rem;
+  color: $color-danger;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: $color-text-muted;
+  cursor: pointer;
+
+  input {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0;
+    accent-color: $color-emerald;
+    cursor: pointer;
+  }
+
+  a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/// Selectable tile (radio / checkbox styled as a card).
+.choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: $space-4 $space-5;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition:
+    border-color $duration-fast,
+    background-color $duration-fast;
+
+  input {
+    @include visually-hidden;
+  }
+
+  &:hover {
+    border-color: $color-text-subtle;
+  }
+
+  &:has(input:checked),
+  &.is-selected {
+    border-color: $color-emerald;
+    background: $color-emerald-soft;
+    box-shadow: inset 0 0 0 1px $color-emerald;
+  }
+
+  &:has(input:focus-visible) {
+    @include focus-ring;
+  }
+
+  &__title {
+    font-weight: $font-weight-medium;
+    color: $color-text;
+  }
+
+  &__desc {
+    font-size: 0.82rem;
+    color: $color-text-muted;
+  }
+}
+
+.chip {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 $space-4;
+  font-size: 0.85rem;
+  color: $color-text-muted;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-pill;
+  transition: all $duration-fast;
+  @include tabular;
+
+  &:hover {
+    border-color: $color-text-subtle;
+    color: $color-text;
+  }
+
+  &.is-active,
+  &[aria-pressed='true'] {
+    background: $color-text;
+    border-color: $color-text;
+    color: #fff;
+  }
+}
+
+.alert {
+  padding: $space-4 $space-5;
+  border-radius: $radius-sm;
+  font-size: 0.9rem;
+  border: 1px solid;
+
+  &--error {
+    background: $color-danger-soft;
+    border-color: color-mix(in srgb, var(--color-danger), transparent 70%);
+    color: $color-danger;
+  }
+
+  &--info {
+    background: $color-gold-soft;
+    border-color: transparent;
+    color: $color-text;
+  }
+}

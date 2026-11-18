@@ -1,0 +1,112 @@
+// =============================================================================
+// Design tokens
+// -----------------------------------------------------------------------------
+// Brand colours live in CSS custom properties (see `_theme.scss`) so a client
+// can be rebranded by overriding `:root` only. SCSS variables below reference
+// those properties and add compile-time tokens (breakpoints, spacing, motion).
+// =============================================================================
+
+// --- Palette (raw values, used once in _theme.scss) --------------------------
+$palette: (
+  'bg': #faf8f5, // Warm Pearl Alabaster
+  'surface-soft': #f2efe9, // Champagne Silk
+  'surface': #ffffff, // Crisp Ivory White
+  'border': #e6e1d8,
+  'border-strong': #d6cfc2,
+  'text': #1a1817, // Deep Espresso Charcoal
+  'text-muted': #5c564f, // Warm Taupe
+  'text-subtle': #8a8279,
+  'gold': #b89352, // Brushed 18k Gold
+  'gold-hover': #9e7b3e,
+  'gold-soft': #f4ecdc,
+  'emerald': #1f3a32, // Deep Heritage Emerald
+  'emerald-hover': #162b25,
+  'emerald-soft': #e7eeeb,
+  'danger': #9b2c2c,
+  'danger-soft': #fbeaea,
+  'success': #2f6b4f,
+  'overlay': rgba(26, 24, 23, 0.55),
+);
+
+// --- Semantic aliases (use these in components) ------------------------------
+$color-bg: var(--color-bg);
+$color-surface-soft: var(--color-surface-soft);
+$color-surface: var(--color-surface);
+$color-border: var(--color-border);
+$color-border-strong: var(--color-border-strong);
+$color-text: var(--color-text);
+$color-text-muted: var(--color-text-muted);
+$color-text-subtle: var(--color-text-subtle);
+$color-gold: var(--color-gold);
+$color-gold-hover: var(--color-gold-hover);
+$color-gold-soft: var(--color-gold-soft);
+$color-emerald: var(--color-emerald);
+$color-emerald-hover: var(--color-emerald-hover);
+$color-emerald-soft: var(--color-emerald-soft);
+$color-danger: var(--color-danger);
+$color-danger-soft: var(--color-danger-soft);
+$color-success: var(--color-success);
+$color-overlay: var(--color-overlay);
+
+// --- Typography --------------------------------------------------------------
+$font-serif: var(--font-serif);
+$font-sans: var(--font-sans);
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+
+// --- Spacing scale (4px base) ------------------------------------------------
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-5: 1.5rem;
+$space-6: 2rem;
+$space-7: 2.5rem;
+$space-8: 3rem;
+$space-9: 4rem;
+$space-10: 5rem;
+$space-11: 6.5rem;
+$space-12: 8rem;
+
+$section-padding: clamp(4rem, 9vw, 8rem);
+$gutter: 1rem; // mobile side gutter
+$gutter-lg: 2.5rem;
+$container-max: 1320px;
+$container-narrow: 860px;
+
+// --- Shape & elevation -------------------------------------------------------
+$radius-sm: 2px;
+$radius: 4px;
+$radius-lg: 8px;
+$radius-pill: 999px;
+
+$shadow-soft: 0 1px 2px rgba(26, 24, 23, 0.04), 0 8px 24px -12px rgba(26, 24, 23, 0.12);
+$shadow-lift: 0 2px 4px rgba(26, 24, 23, 0.04), 0 24px 48px -24px rgba(26, 24, 23, 0.28);
+$shadow-drawer: -24px 0 64px -16px rgba(26, 24, 23, 0.3);
+
+// --- Motion ------------------------------------------------------------------
+$ease-luxe: cubic-bezier(0.22, 0.61, 0.36, 1);
+$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+$duration-fast: 160ms;
+$duration: 280ms;
+$duration-slow: 700ms;
+
+// --- Layers ------------------------------------------------------------------
+$z-header: 50;
+$z-drawer: 80;
+$z-modal: 90;
+$z-toast: 100;
+
+// --- Breakpoints (mobile-first) ----------------------------------------------
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1280px,
+);
+
+$header-height: 76px;
+$header-height-mobile: 64px;

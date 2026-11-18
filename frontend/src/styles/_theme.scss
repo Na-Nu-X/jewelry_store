@@ -1,0 +1,17 @@
+@use 'sass:map';
+@use 'variables' as v;
+
+// -----------------------------------------------------------------------------
+// White-label theme: override these custom properties to rebrand the site.
+// -----------------------------------------------------------------------------
+:root {
+  @each $name, $value in v.$palette {
+    --color-#{$name}: #{$value};
+  }
+
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  color-scheme: light;
+  accent-color: map.get(v.$palette, 'gold');
+}

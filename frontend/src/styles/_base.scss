@@ -1,0 +1,233 @@
+@use 'mixins' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: $header-height + 16px;
+
+  @include reduced-motion {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: $color-bg;
+  overflow-x: hidden;
+
+  &.no-scroll {
+    overflow: hidden;
+  }
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+::selection {
+  background: $color-gold-soft;
+  color: $color-text;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: $color-border;
+  margin: $space-6 0;
+}
+
+.container {
+  @include container;
+}
+
+.container--narrow {
+  @include container($container-narrow);
+}
+
+.section {
+  @include section;
+}
+
+.section--soft {
+  @include section($color-surface-soft);
+}
+
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin-bottom: $space-8;
+  max-width: 640px;
+
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  &--center {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+
+    &::after {
+      @include hairline-ornament;
+      margin-top: $space-3;
+    }
+  }
+}
+
+.visually-hidden {
+  @include visually-hidden;
+}
+
+.skip-link {
+  position: absolute;
+  left: $space-4;
+  top: -100px;
+  z-index: $z-toast;
+  padding: $space-3 $space-5;
+  background: $color-emerald;
+  color: #fff;
+  border-radius: $radius;
+
+  &:focus {
+    top: $space-4;
+  }
+}
+
+.skeleton {
+  @include skeleton;
+  border-radius: $radius;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-up {
+  animation: fade-up $duration-slow $ease-out both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+/* Badges --------------------------------------------------------------------*/
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 0.66rem;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  border-radius: $radius-sm;
+  background: $color-surface;
+  color: $color-text;
+  border: 1px solid $color-border;
+  white-space: nowrap;
+
+  &--gold {
+    background: $color-gold-soft;
+    border-color: transparent;
+    color: $color-gold-hover;
+  }
+
+  &--emerald {
+    background: $color-emerald;
+    border-color: $color-emerald;
+    color: #fff;
+  }
+
+  &--dark {
+    background: $color-text;
+    border-color: $color-text;
+    color: #fff;
+  }
+
+  &--muted {
+    background: $color-surface-soft;
+    color: $color-text-muted;
+  }
+}
+
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: $color-text-muted;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: $color-text-subtle;
+  }
+
+  &--skladom::before {
+    background: $color-success;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success), transparent 82%);
+  }
+
+  &--na_objednavku::before {
+    background: $color-gold;
+  }
+
+  &--vypredane {
+    color: $color-text-subtle;
+  }
+}
