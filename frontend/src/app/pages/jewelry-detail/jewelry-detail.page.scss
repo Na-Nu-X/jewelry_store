@@ -1,0 +1,534 @@
+@use 'styles/mixins' as *;
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  padding: $space-5 0;
+  font-size: 0.78rem;
+  color: $color-text-subtle;
+
+  a:hover {
+    color: $color-text;
+  }
+
+  [aria-current] {
+    color: $color-text-muted;
+  }
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-4;
+  padding-block: $space-12;
+  text-align: center;
+
+  > app-icon {
+    width: 48px;
+    height: 48px;
+    color: $color-gold;
+  }
+}
+
+/* Dossier layout -----------------------------------------------------------*/
+.dossier {
+  display: grid;
+  gap: $space-7;
+  padding-bottom: $space-10;
+
+  @include respond-to(lg) {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: $space-10;
+    align-items: start;
+  }
+
+  &--loading {
+    padding-top: $space-9;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+
+    @include respond-to(lg) {
+      position: sticky;
+      top: calc(#{$header-height} + #{$space-5});
+    }
+
+    .eyebrow {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+    }
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-text-muted;
+  }
+
+  &__price-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: $space-3;
+    padding: $space-4 0;
+    @include hairline(top);
+    @include hairline(bottom);
+  }
+
+  &__price {
+    font-size: 1.75rem;
+    font-weight: $font-weight-regular;
+  }
+
+  &__vat {
+    font-size: 0.8rem;
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3 $space-5;
+  }
+}
+
+.hallmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: $color-emerald;
+
+  app-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Gallery ------------------------------------------------------------------*/
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  min-width: 0;
+
+  @include respond-to(md) {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+  }
+
+  &__main {
+    position: relative;
+    flex: 1;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: $color-surface-soft;
+    border-radius: $radius-sm;
+    cursor: zoom-in;
+
+    img {
+      @include cover-image;
+      transition: transform $duration-slow $ease-luxe;
+    }
+
+    @media (hover: hover) {
+      &.is-zooming img {
+        transform: scale(1.9);
+        transition-duration: $duration;
+      }
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: $space-4;
+    left: $space-4;
+  }
+
+  &__expand,
+  &__nav {
+    @include reset-button;
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    box-shadow: $shadow-soft;
+    transition: background-color $duration-fast;
+
+    &:hover {
+      background: #fff;
+    }
+  }
+
+  &__expand {
+    top: $space-4;
+    right: $space-4;
+  }
+
+  &__nav {
+    top: 50%;
+    transform: translateY(-50%);
+
+    &--prev {
+      left: $space-3;
+    }
+
+    &--next {
+      right: $space-3;
+    }
+  }
+
+  &__caption {
+    position: absolute;
+    left: $space-4;
+    bottom: $space-4;
+    padding: 6px 12px;
+    font-size: 0.74rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: $radius-pill;
+  }
+
+  &__thumbs {
+    display: flex;
+    gap: $space-2;
+    overflow-x: auto;
+
+    @include respond-to(md) {
+      flex-direction: column;
+      width: 84px;
+      flex-shrink: 0;
+    }
+  }
+
+  &__thumb {
+    @include reset-button;
+    flex-shrink: 0;
+    width: 72px;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: $radius-sm;
+    border: 1px solid transparent;
+    opacity: 0.6;
+    transition:
+      opacity $duration-fast,
+      border-color $duration-fast;
+
+    @include respond-to(md) {
+      width: 100%;
+    }
+
+    img {
+      @include cover-image;
+    }
+
+    &:hover,
+    &.is-active {
+      opacity: 1;
+    }
+
+    &.is-active {
+      border-color: $color-gold;
+    }
+  }
+}
+
+/* Configurator -------------------------------------------------------------*/
+.config {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  padding: $space-5 0;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__label {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: $space-2;
+
+    strong {
+      color: $color-text;
+    }
+  }
+
+  &__guide {
+    @include reset-button;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: $color-gold-hover;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 6px;
+}
+
+.size {
+  @include reset-button;
+  height: 44px;
+  font-size: 0.9rem;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-sm;
+  background: $color-surface;
+  transition: all $duration-fast;
+
+  &:hover {
+    border-color: $color-text;
+  }
+
+  &.is-active {
+    background: $color-text;
+    border-color: $color-text;
+    color: #fff;
+  }
+}
+
+.engraving {
+  position: relative;
+
+  &__input {
+    padding-right: 70px;
+  }
+
+  &__count {
+    position: absolute;
+    right: $space-4;
+    top: 15px;
+    font-size: 0.74rem;
+    color: $color-text-subtle;
+  }
+
+  &__preview {
+    margin: $space-3 0 0;
+    padding: $space-4;
+    text-align: center;
+    font-family: $font-serif;
+    font-style: italic;
+    font-size: 1.35rem;
+    color: $color-gold-hover;
+    background: linear-gradient(180deg, $color-gold-soft, transparent);
+    border-radius: $radius-sm;
+    word-break: break-word;
+  }
+}
+
+.actions {
+  display: grid;
+  gap: $space-3;
+
+  @include respond-to(sm) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.sold-out-note {
+  margin: 0;
+  font-size: 0.86rem;
+  color: $color-text-muted;
+
+  a {
+    color: $color-gold-hover;
+    text-decoration: underline;
+  }
+}
+
+.perks {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-5;
+  background: $color-surface-soft;
+  border-radius: $radius-sm;
+  font-size: 0.86rem;
+  color: $color-text-muted;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-3;
+  }
+
+  app-icon {
+    color: $color-gold;
+    margin-top: 2px;
+  }
+}
+
+/* Details ------------------------------------------------------------------*/
+.details {
+  display: grid;
+  gap: $space-8;
+  padding-block: $space-10;
+  @include hairline(top);
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1fr;
+    gap: $space-10;
+  }
+
+  &__story {
+    h2 {
+      margin-bottom: $space-5;
+    }
+
+    p {
+      font-size: 1.02rem;
+      line-height: 1.85;
+    }
+
+    .muted {
+      font-size: 0.85rem;
+    }
+  }
+
+  &__specs h2 {
+    margin-bottom: $space-5;
+  }
+}
+
+.specs {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+
+  th,
+  td {
+    padding: $space-3 0;
+    text-align: left;
+    vertical-align: top;
+    @include hairline;
+  }
+
+  th {
+    width: 45%;
+    padding-right: $space-4;
+    font-weight: $font-weight-regular;
+    color: $color-text-muted;
+  }
+}
+
+/* Related ------------------------------------------------------------------*/
+.related {
+  @include section($color-surface-soft);
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $space-4;
+    margin-bottom: $space-7;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-7 $space-4;
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: $space-5;
+    }
+  }
+}
+
+/* Lightbox -----------------------------------------------------------------*/
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal + 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 15, 14, 0.96);
+  animation: fade-in $duration $ease-luxe both;
+
+  figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-4;
+    max-width: 100%;
+  }
+
+  img {
+    max-width: 100vw;
+    max-height: 84vh;
+    object-fit: contain;
+
+    @include respond-to(md) {
+      max-width: 84vw;
+    }
+  }
+
+  figcaption {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &__close,
+  &__nav {
+    @include reset-button;
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    transition: background-color $duration-fast;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &__close {
+    top: $space-4;
+    right: $space-4;
+  }
+
+  &__nav {
+    top: 50%;
+    transform: translateY(-50%);
+
+    &--prev {
+      left: $space-3;
+    }
+
+    &--next {
+      right: $space-3;
+    }
+
+    @include respond-below(md) {
+      top: auto;
+      bottom: $space-5;
+      transform: none;
+    }
+  }
+}

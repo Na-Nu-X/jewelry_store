@@ -1,0 +1,289 @@
+@if (item.isLoading() && !item.hasValue()) {
+  <div class="container dossier dossier--loading" aria-busy="true">
+    <div class="skeleton" style="aspect-ratio: 4 / 5"></div>
+    <div class="dossier__info">
+      <div class="skeleton" style="height: 12px; width: 30%"></div>
+      <div class="skeleton" style="height: 44px; width: 80%"></div>
+      <div class="skeleton" style="height: 16px; width: 55%"></div>
+      <div class="skeleton" style="height: 28px; width: 25%"></div>
+      <div class="skeleton" style="height: 180px"></div>
+    </div>
+  </div>
+} @else if (notFound()) {
+  <div class="container state">
+    <app-icon name="diamond" />
+    <h1>Tento šperk sme nenašli</h1>
+    <p class="lead">Možno už našiel svojho majiteľa. Pozrite si ďalšie kúsky z našej kolekcie.</p>
+    <a routerLink="/kolekcia" class="btn btn--primary">Späť do kolekcie</a>
+  </div>
+} @else if (errorMessage()) {
+  <div class="container state">
+    <h1>Šperk sa nepodarilo načítať</h1>
+    <p class="lead">{{ errorMessage() }}</p>
+    <button type="button" class="btn btn--outline" (click)="item.reload()">Skúsiť znova</button>
+  </div>
+} @else if (item.value(); as piece) {
+  <div class="container">
+    <nav class="crumbs" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/kolekcia">Kolekcia</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/kolekcia" [queryParams]="{ category: piece.category.slug }">{{ piece.category.name }}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ piece.name }}</span>
+    </nav>
+  </div>
+
+  <article class="container dossier">
+    <!-- Gallery -->
+    <section class="gallery" aria-label="Galéria fotografií">
+      @if (activeImage(); as image) {
+        <div
+          class="gallery__main"
+          [class.is-zooming]="zooming()"
+          (mousemove)="onZoomMove($event)"
+          (mouseleave)="zooming.set(false)"
+          (touchstart)="onTouchStart($event)"
+          (touchend)="onTouchEnd($event)"
+        >
+          <img
+            [src]="img(image.image_url, 1400)"
+            [alt]="image.caption || piece.name"
+            [style.transform-origin]="zoomOrigin()"
+            width="1400"
+            height="1750"
+            fetchpriority="high"
+          />
+          @if (piece.badge !== 'none') {
+            <span class="badge gallery__badge" [class]="badgeClass()">{{ piece.badge_display }}</span>
+          }
+          <button type="button" class="gallery__expand" (click)="openLightbox()" aria-label="Zobraziť na celú obrazovku">
+            <app-icon name="expand" />
+          </button>
+          @if (gallery().length > 1) {
+            <button type="button" class="gallery__nav gallery__nav--prev" (click)="select(activeIndex() - 1)" aria-label="Predchádzajúca fotografia">
+              <app-icon name="chevron-left" />
+            </button>
+            <button type="button" class="gallery__nav gallery__nav--next" (click)="select(activeIndex() + 1)" aria-label="Ďalšia fotografia">
+              <app-icon name="chevron-right" />
+            </button>
+          }
+          @if (image.caption) {
+            <span class="gallery__caption">{{ image.caption }}</span>
+          }
+        </div>
+      }
+      @if (gallery().length > 1) {
+        <div class="gallery__thumbs" role="tablist" aria-label="Náhľady fotografií">
+          @for (image of gallery(); track image.id; let i = $index) {
+            <button
+              type="button"
+              role="tab"
+              class="gallery__thumb"
+              [class.is-active]="i === activeIndex()"
+              [attr.aria-selected]="i === activeIndex()"
+              [attr.aria-label]="image.caption || 'Fotografia ' + (i + 1)"
+              (click)="select(i)"
+            >
+              <img [src]="img(image.image_url, 200)" alt="" width="200" height="250" loading="lazy" />
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Info & configurator -->
+    <section class="dossier__info">
+      <span class="eyebrow">{{ piece.collection_name || piece.category.name }}</span>
+      <h1>{{ piece.name }}</h1>
+      <p class="dossier__subtitle num">{{ subtitle() }}</p>
+
+      <div class="dossier__price-row">
+        <span class="price dossier__price">{{ piece.base_price | eur }}</span>
+        <span class="muted dossier__vat">vrátane DPH{{ isInvestment() ? ' (investičné zlato oslobodené)' : '' }}</span>
+      </div>
+
+      <div class="dossier__badges">
+        <span class="availability" [class]="'availability--' + piece.availability">{{ piece.availability_display }}</span>
+        @if (isPreciousMetal()) {
+          <span class="hallmark num"><app-icon name="stamp" /> Puncované · {{ piece.gold_purity }}</span>
+        }
+        @if (piece.diamond_grade?.includes('GIA') || piece.diamond_grade?.includes('IGI') || piece.diamond_grade?.includes('HRD') || piece.diamond_grade?.includes('GRS')) {
+          <span class="hallmark"><app-icon name="shield" /> Certifikovaný kameň</span>
+        }
+      </div>
+
+      <div class="config">
+        @if (piece.is_ring) {
+          <div class="config__group" id="ring-sizes">
+            <div class="config__label">
+              <span class="field__label">Veľkosť prsteňa (EU / SK)
+                @if (ringSize()) {
+                  · <strong class="num">{{ ringSize() }}</strong>
+                }
+              </span>
+              <button type="button" class="config__guide" (click)="openSizeGuide()">
+                <app-icon name="ruler" /> Ako zistiť veľkosť?
+              </button>
+            </div>
+            <div class="sizes" role="radiogroup" aria-label="Veľkosť prsteňa">
+              @for (size of ringSizes; track size) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="size num"
+                  [class.is-active]="ringSize() === size"
+                  [attr.aria-checked]="ringSize() === size"
+                  (click)="chooseSize(size)"
+                >
+                  {{ size }}
+                </button>
+              }
+            </div>
+            @if (sizeError()) {
+              <p class="field__error" role="alert">Zvoľte, prosím, veľkosť prsteňa. Ak si nie ste istí, pomôže vám sprievodca veľkosťou.</p>
+            }
+          </div>
+        }
+
+        @if (!isInvestment()) {
+          <div class="config__group">
+            <label class="check">
+              <input type="checkbox" [checked]="engravingEnabled()" (change)="engravingEnabled.set(!engravingEnabled())" />
+              <span><strong>Pridať gravírovanie</strong> – mená, dátum alebo krátke venovanie, zadarmo</span>
+            </label>
+            @if (engravingEnabled()) {
+              <div class="engraving">
+                <input
+                  type="text"
+                  class="field__control engraving__input"
+                  [attr.maxlength]="engravingMax"
+                  [value]="engraving()"
+                  (input)="onEngraving($event)"
+                  placeholder="Napr. Navždy tvoja · 14. 6. 2027"
+                  aria-label="Text gravírovania"
+                />
+                <span class="engraving__count num">{{ engraving().length }} / {{ engravingMax }}</span>
+                @if (engraving()) {
+                  <p class="engraving__preview" aria-hidden="true">{{ engraving() }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <div class="actions">
+          <button type="button" class="btn btn--primary btn--block" (click)="addToBag()" [disabled]="soldOut()">
+            <app-icon name="bag" /> {{ soldOut() ? 'Vypredané' : 'Pridať do košíka' }}
+          </button>
+          <button type="button" class="btn btn--outline btn--block" (click)="addToBag(true)" [disabled]="soldOut()">
+            <app-icon name="store" /> Rezervovať v predajni
+          </button>
+        </div>
+        @if (soldOut()) {
+          <p class="sold-out-note">
+            Tento kus je vypredaný. Radi vám ho vyrobíme na mieru – <a routerLink="/na-mieru">pošlite nám dopyt</a>.
+          </p>
+        }
+      </div>
+
+      <ul class="perks">
+        <li><app-icon name="truck" /> {{ config.commerce.shippingNote }}</li>
+        <li><app-icon name="store" /> Rezervácia v predajni na {{ config.commerce.reservationHoldDays }} dni – platíte až na mieste</li>
+        <li><app-icon name="gift" /> Luxusná darčeková kazeta a certifikát pravosti</li>
+        <li><app-icon name="sparkle" /> Doživotné čistenie a kontrola kameňov zadarmo</li>
+      </ul>
+    </section>
+  </article>
+
+  <!-- Description & specification -->
+  <section class="container details">
+    <div class="details__story">
+      <span class="eyebrow">O šperku</span>
+      <h2>Príbeh a remeslo</h2>
+      <p>{{ piece.description }}</p>
+      <p class="muted">{{ config.legal.hallmark }}</p>
+    </div>
+
+    <div class="details__specs">
+      <h2 class="h3">Parametre šperku a drahokamu</h2>
+      <table class="specs num">
+        <tbody>
+          <tr><th scope="row">Kategória</th><td>{{ piece.category.name }}</td></tr>
+          @if (piece.collection_name) {
+            <tr><th scope="row">Kolekcia</th><td>{{ piece.collection_name }}</td></tr>
+          }
+          <tr><th scope="row">Kov</th><td>{{ piece.metal_type_display }}</td></tr>
+          <tr><th scope="row">Rýdzosť</th><td>{{ piece.gold_purity }}</td></tr>
+          <tr><th scope="row">Hmotnosť</th><td>{{ piece.weight_grams | decimal }} g</td></tr>
+          <tr><th scope="row">Hlavný kameň</th><td>{{ piece.primary_gemstone_display }}</td></tr>
+          @if (piece.carat_weight) {
+            <tr><th scope="row">Karáty</th><td>{{ piece.carat_weight | decimal }} ct</td></tr>
+          }
+          @if (piece.diamond_grade) {
+            <tr><th scope="row">Farba, čistota & certifikát</th><td>{{ piece.diamond_grade }}</td></tr>
+          }
+          <tr>
+            <th scope="row">Punc</th>
+            <td>{{ isPreciousMetal() ? 'Áno – Puncový úrad SR' : 'Striebro 925, puncované' }}</td>
+          </tr>
+          <tr><th scope="row">Dostupnosť</th><td>{{ piece.availability_display }}</td></tr>
+          <tr><th scope="row">Kód šperku</th><td>{{ piece.sku }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Related -->
+  @if (related.hasValue() && related.value().length) {
+    <section class="section--soft related">
+      <div class="container">
+        <div class="related__head">
+          <h2>Mohlo by sa vám páčiť</h2>
+          <a routerLink="/kolekcia" [queryParams]="{ category: piece.category.slug }" class="link-underline">
+            {{ piece.category.name }} <app-icon name="arrow-right" />
+          </a>
+        </div>
+        <div class="related__grid">
+          @for (r of related.value(); track r.id) {
+            <app-jewelry-card [item]="r" />
+          }
+        </div>
+      </div>
+    </section>
+  } @else if (related.isLoading()) {
+    <section class="section--soft related">
+      <div class="container related__grid">
+        @for (s of [1, 2, 3, 4]; track s) {
+          <app-card-skeleton />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Lightbox -->
+  @if (lightboxOpen() && activeImage(); as image) {
+    <div class="lightbox" role="dialog" aria-modal="true" aria-label="Galéria na celú obrazovku" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+      <button type="button" class="lightbox__close" (click)="lightboxOpen.set(false)" aria-label="Zavrieť galériu">
+        <app-icon name="close" />
+      </button>
+      @if (gallery().length > 1) {
+        <button type="button" class="lightbox__nav lightbox__nav--prev" (click)="select(activeIndex() - 1)" aria-label="Predchádzajúca">
+          <app-icon name="chevron-left" />
+        </button>
+      }
+      <figure>
+        <img [src]="image.image_url | sized: 2200" [alt]="image.caption || piece.name" />
+        <figcaption class="num">
+          {{ image.caption || piece.name }} · {{ activeIndex() + 1 }} / {{ gallery().length }}
+        </figcaption>
+      </figure>
+      @if (gallery().length > 1) {
+        <button type="button" class="lightbox__nav lightbox__nav--next" (click)="select(activeIndex() + 1)" aria-label="Ďalšia">
+          <app-icon name="chevron-right" />
+        </button>
+      }
+    </div>
+  }
+}
