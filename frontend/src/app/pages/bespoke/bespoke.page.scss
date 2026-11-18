@@ -7,11 +7,12 @@
 /* Feature ------------------------------------------------------------------*/
 .feature {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: $space-8;
   align-items: center;
 
   @include respond-to(lg) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: $space-10;
   }
 

@@ -1,9 +1,15 @@
 import { SITE_CONFIG } from '../config/site.config';
 
-const eurFormatter = new Intl.NumberFormat(SITE_CONFIG.commerce.locale, {
+const eurWhole = new Intl.NumberFormat(SITE_CONFIG.commerce.locale, {
   style: 'currency',
   currency: SITE_CONFIG.commerce.currency,
-  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+const eurCents = new Intl.NumberFormat(SITE_CONFIG.commerce.locale, {
+  style: 'currency',
+  currency: SITE_CONFIG.commerce.currency,
+  minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
@@ -18,9 +24,10 @@ export function toNumber(value: string | number | null | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-/** "2450.00" -> "2 450 €" (Slovak locale, no trailing ,00). */
+/** "2450.00" -> "2 450 €"; "75.6" -> "75,60 €" (cents shown only when present). */
 export function formatEur(value: string | number | null | undefined): string {
-  return eurFormatter.format(toNumber(value));
+  const n = toNumber(value);
+  return Number.isInteger(n) ? eurWhole.format(n) : eurCents.format(n);
 }
 
 /** "0.50" -> "0,50" */

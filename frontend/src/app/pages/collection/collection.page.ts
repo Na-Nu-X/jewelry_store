@@ -10,8 +10,8 @@ import {
   untracked,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
-import { catchError, debounceTime, distinctUntilChanged, of, skip, switchMap, tap } from 'rxjs';
+import { ActivatedRoute, ParamMap, Params, Router, RouterLink, convertToParamMap } from '@angular/router';
+import { Subject, catchError, debounceTime, filter, of, skip, switchMap, tap } from 'rxjs';
 
 import {
   CatalogOrdering,
@@ -124,6 +124,8 @@ export class CollectionPage {
 
   /** Local search input, debounced into the URL. */
   protected readonly searchTerm = signal(this.filters().search);
+  private readonly searchInput$ = new Subject<{ term: string; version: number }>();
+  private searchVersion = 0;
 
   protected readonly hasMore = computed(() => this.items().length < this.total());
 
@@ -207,16 +209,22 @@ export class CollectionPage {
       .pipe(skip(1), takeUntilDestroyed())
       .subscribe(() => this.visibleCount.set(PAGE_SIZE));
 
-    // Debounced search → URL.
-    toObservable(this.searchTerm)
-      .pipe(debounceTime(350), distinctUntilChanged(), skip(1), takeUntilDestroyed())
-      .subscribe((term) => this.updateParams({ search: term.trim() || null }));
+    // Debounced search → URL. Only real keystrokes enter this stream; a clear action
+    // bumps `searchVersion`, which discards any keystroke still waiting in the debounce.
+    this.searchInput$
+      .pipe(
+        debounceTime(350),
+        filter(({ version }) => version === this.searchVersion),
+        filter(({ term }) => term !== this.latestFilters().search),
+        takeUntilDestroyed(),
+      )
+      .subscribe(({ term }) => this.updateParams({ search: term || null }));
 
     // Keep the input in sync when the URL changes elsewhere (back button, chip removal).
     effect(() => {
       const urlSearch = this.filters().search;
       untracked(() => {
-        if (urlSearch.trim() !== this.searchTerm().trim()) this.searchTerm.set(urlSearch);
+        if (urlSearch !== this.searchTerm().trim()) this.searchTerm.set(urlSearch);
       });
     });
 
@@ -231,12 +239,24 @@ export class CollectionPage {
     inject(DestroyRef).onDestroy(() => this.document.body.classList.remove('no-scroll'));
   }
 
+  /**
+   * Query params the page is navigating towards. Rapid successive changes (e.g. two quick
+   * checkbox clicks) must build on the previous, still in-flight change – not on the URL.
+   */
+  private pendingParams: Params | null = null;
+
+  private latestFilters(): FilterState {
+    return this.pendingParams
+      ? parseFilters(convertToParamMap(this.pendingParams))
+      : this.filters();
+  }
+
   protected isChecked(key: MultiKey, value: string): boolean {
     return this.filters()[key].includes(value);
   }
 
   protected toggle(key: MultiKey, value: string): void {
-    const current = this.filters()[key];
+    const current = this.latestFilters()[key];
     const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
     this.updateParams({ [key]: next.length ? next.join(',') : null });
   }
@@ -254,7 +274,7 @@ export class CollectionPage {
   protected onPriceInput(which: 'min' | 'max', event: Event): void {
     const raw = (event.target as HTMLInputElement).value;
     const value = raw === '' ? null : Math.max(0, Math.round(Number(raw)));
-    const f = this.filters();
+    const f = this.latestFilters();
     if (which === 'min') this.setPrice(Number.isFinite(value) ? value : null, f.max_price);
     else this.setPrice(f.min_price, Number.isFinite(value) ? value : null);
   }
@@ -271,17 +291,21 @@ export class CollectionPage {
   }
 
   protected onSearch(event: Event): void {
-    this.searchTerm.set((event.target as HTMLInputElement).value);
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+    this.searchInput$.next({ term: value.trim(), version: this.searchVersion });
   }
 
   protected clearSearch(): void {
+    this.searchVersion++;
     this.searchTerm.set('');
     this.updateParams({ search: null });
   }
 
   protected clearAll(): void {
+    this.searchVersion++;
     this.searchTerm.set('');
-    void this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+    this.navigateTo({}, false);
   }
 
   protected loadMore(): void {
@@ -301,11 +325,20 @@ export class CollectionPage {
   }
 
   private updateParams(patch: Record<string, string | number | null>): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: patch,
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+    const next: Params = { ...(this.pendingParams ?? this.route.snapshot.queryParams) };
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null || value === '') delete next[key];
+      else next[key] = String(value);
+    }
+    this.navigateTo(next, true);
+  }
+
+  private navigateTo(queryParams: Params, replaceUrl: boolean): void {
+    this.pendingParams = queryParams;
+    void this.router
+      .navigate([], { relativeTo: this.route, queryParams, replaceUrl })
+      .finally(() => {
+        if (this.pendingParams === queryParams) this.pendingParams = null;
+      });
   }
 }

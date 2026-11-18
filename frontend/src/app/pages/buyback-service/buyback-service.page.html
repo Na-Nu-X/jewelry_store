@@ -219,7 +219,7 @@
                 <input type="checkbox" formControlName="consent" />
                 <span>Súhlasím so spracovaním osobných údajov na účel vybavenia dopytu. {{ config.legal.gdpr }}</span>
               </label>
-              <app-field-error [control]="form.controls.consent" />
+              <app-field-error [control]="form.controls.consent" requiredMessage="Pre odoslanie je potrebný váš súhlas so spracovaním údajov." />
             </div>
           </div>
 

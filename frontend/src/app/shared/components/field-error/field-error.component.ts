@@ -23,13 +23,17 @@ import { validationMessage } from '../../../core/utils/validators';
 })
 export class FieldErrorComponent {
   readonly control = input.required<AbstractControl>();
+  /** Overrides the message for the `required` error (e.g. consent checkboxes). */
+  readonly requiredMessage = input<string | null>(null);
 
   private readonly tick = signal(0);
 
   protected readonly message = computed(() => {
     this.tick();
     const ctrl = this.control();
-    return ctrl.touched && ctrl.invalid ? validationMessage(ctrl.errors) : null;
+    if (!ctrl.touched || !ctrl.invalid) return null;
+    const custom = this.requiredMessage();
+    return custom && ctrl.hasError('required') ? custom : validationMessage(ctrl.errors);
   });
 
   constructor() {

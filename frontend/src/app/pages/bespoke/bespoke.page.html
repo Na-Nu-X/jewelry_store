@@ -133,7 +133,7 @@
                     </label>
                   }
                 </div>
-                <app-field-error [control]="form.controls.type.controls.jewelry_type" />
+                <app-field-error [control]="form.controls.type.controls.jewelry_type" requiredMessage="Vyberte, prosím, typ šperku." />
               </fieldset>
             }
             @case (1) {
@@ -197,7 +197,7 @@
                       </label>
                     }
                   </div>
-                  <app-field-error [control]="form.controls.vision.controls.estimated_budget" />
+                  <app-field-error [control]="form.controls.vision.controls.estimated_budget" requiredMessage="Zvoľte orientačný rozpočet." />
                 </div>
                 <div class="field">
                   <label class="field__label" for="b-desc">Opíšte svoju predstavu</label>
@@ -236,7 +236,7 @@
                       <input type="checkbox" formControlName="consent" />
                       <span>Súhlasím so spracovaním osobných údajov na účel vybavenia dopytu. {{ config.legal.gdpr }}</span>
                     </label>
-                    <app-field-error [control]="form.controls.contact.controls.consent" />
+                    <app-field-error [control]="form.controls.contact.controls.consent" requiredMessage="Pre odoslanie je potrebný váš súhlas so spracovaním údajov." />
                   </div>
                 </div>
               </fieldset>

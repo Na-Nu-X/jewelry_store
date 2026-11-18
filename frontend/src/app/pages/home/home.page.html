@@ -40,14 +40,16 @@
     </div>
   </div>
 
-  <ul class="metrics container">
+  <div class="container">
+    <ul class="metrics">
     @for (m of config.trustMetrics; track m.label) {
       <li>
         <strong class="num">{{ m.value }}</strong>
         <span>{{ m.label }}</span>
       </li>
     }
-  </ul>
+    </ul>
+  </div>
 </section>
 
 <!-- FEATURED -------------------------------------------------------------->

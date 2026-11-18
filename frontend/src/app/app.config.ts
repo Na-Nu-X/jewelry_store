@@ -7,6 +7,7 @@ import {
 import { registerLocaleData } from '@angular/common';
 import localeSk from '@angular/common/locales/sk';
 import {
+  ActivatedRouteSnapshot,
   TitleStrategy,
   provideRouter,
   withComponentInputBinding,
@@ -19,6 +20,13 @@ import { BrandTitleStrategy } from './core/services/title.strategy';
 
 registerLocaleData(localeSk);
 
+/** Identifies the rendered page: deepest route config plus its path params. */
+function leafKey(snapshot: ActivatedRouteSnapshot): string {
+  let leaf = snapshot;
+  while (leaf.firstChild) leaf = leaf.firstChild;
+  return `${leaf.routeConfig?.path ?? ''}|${JSON.stringify(leaf.params)}`;
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -26,7 +34,14 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
-      withViewTransitions({ skipInitialTransition: true }),
+      withViewTransitions({
+        skipInitialTransition: true,
+        onViewTransitionCreated: ({ transition, from, to }) => {
+          // Filter / sort changes only touch query params – no page transition for those.
+          // (Angular logs the resulting AbortError in dev mode only.)
+          if (leafKey(from) === leafKey(to)) transition.skipTransition();
+        },
+      }),
     ),
     provideHttpClient(withFetch()),
     { provide: TitleStrategy, useClass: BrandTitleStrategy },
