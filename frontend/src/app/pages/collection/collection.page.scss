@@ -1,0 +1,429 @@
+@use 'styles/mixins' as *;
+
+.page-head {
+  padding: $space-7 0 $space-8;
+  background: $color-surface-soft;
+  @include hairline;
+
+  h1 {
+    margin: $space-4 0 $space-3;
+  }
+
+  .lead {
+    max-width: 640px;
+    margin: 0;
+  }
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  font-size: 0.78rem;
+  color: $color-text-subtle;
+
+  a:hover {
+    color: $color-text;
+  }
+
+  [aria-current] {
+    color: $color-text-muted;
+  }
+}
+
+.catalog {
+  padding-block: $space-6 $space-11;
+}
+
+/* Toolbar ------------------------------------------------------------------*/
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-3;
+  margin-bottom: $space-6;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr auto;
+    padding-left: calc(260px + #{$space-8});
+  }
+
+  &__filters {
+    @include respond-to(lg) {
+      display: none;
+    }
+  }
+}
+
+.search {
+  grid-column: 1 / -1;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-column: 1;
+    max-width: 420px;
+  }
+
+  > app-icon {
+    position: absolute;
+    left: $space-4;
+    color: $color-text-subtle;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    height: 48px;
+    padding: 0 $space-8 0 $space-8 + $space-1;
+    font: inherit;
+    font-size: 1rem;
+    background: $color-surface;
+    border: 1px solid $color-border-strong;
+    border-radius: $radius-pill;
+
+    &:focus {
+      outline: none;
+      border-color: $color-gold;
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  &__clear {
+    @include reset-button;
+    position: absolute;
+    right: $space-3;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: $color-text-subtle;
+  }
+}
+
+.sort select {
+  min-height: 40px;
+  height: 40px;
+  padding-block: 0;
+  font-size: 0.88rem;
+
+  @include respond-to(lg) {
+    min-width: 220px;
+  }
+}
+
+/* Layout -------------------------------------------------------------------*/
+.layout {
+  display: grid;
+  gap: $space-8;
+
+  @include respond-to(lg) {
+    grid-template-columns: 260px 1fr;
+    align-items: start;
+  }
+}
+
+/* Filters ------------------------------------------------------------------*/
+.filters-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: $z-drawer;
+  background: $color-overlay;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $duration;
+
+  &.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.filters {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: $z-drawer + 1;
+  width: min(380px, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: $color-bg;
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform $duration-slow $ease-out,
+    visibility 0s linear $duration-slow;
+
+  &.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform $duration-slow $ease-out;
+  }
+
+  @include respond-to(lg) {
+    position: sticky;
+    top: calc(#{$header-height} + #{$space-5});
+    z-index: auto;
+    width: auto;
+    max-height: calc(100vh - #{$header-height} - #{$space-8});
+    transform: none;
+    visibility: visible;
+    background: transparent;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-3 $space-4 $space-3 $space-5;
+    @include hairline;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    @include respond-to(lg) {
+      display: none;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: $space-2 $space-5;
+
+    @include respond-to(lg) {
+      padding: 0 $space-2 0 0;
+    }
+  }
+
+  &__foot {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: $space-3;
+    padding: $space-4 $space-5;
+    @include hairline(top);
+
+    @include respond-to(lg) {
+      display: none;
+    }
+  }
+}
+
+.facet {
+  margin: 0;
+  padding: $space-5 0;
+  border: 0;
+  @include hairline;
+
+  &:first-child {
+    @include respond-to(lg) {
+      padding-top: 0;
+    }
+  }
+
+  legend {
+    float: left;
+    width: 100%;
+    margin-bottom: $space-3;
+    @include eyebrow($color-text);
+    font-size: 0.66rem;
+  }
+
+  &__option {
+    clear: both;
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: 6px 0;
+    font-size: 0.9rem;
+    color: $color-text-muted;
+    cursor: pointer;
+
+    &:hover {
+      color: $color-text;
+    }
+
+    input {
+      width: 17px;
+      height: 17px;
+      margin: 0;
+      accent-color: $color-emerald;
+      cursor: pointer;
+    }
+
+    &:has(input:checked) {
+      color: $color-text;
+    }
+  }
+
+  &__count {
+    margin-left: auto;
+    font-size: 0.76rem;
+    color: $color-text-subtle;
+  }
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  &--zlte_zlato {
+    background: linear-gradient(135deg, #f3dc9a, #c9a24f);
+  }
+  &--biele_zlato {
+    background: linear-gradient(135deg, #f4f4f2, #c9c7c2);
+  }
+  &--ruzove_zlato {
+    background: linear-gradient(135deg, #f3cdb9, #c98d73);
+  }
+  &--platina {
+    background: linear-gradient(135deg, #eceef0, #a9adb3);
+  }
+  &--striebro {
+    background: linear-gradient(135deg, #fafafa, #bdbdbd);
+  }
+}
+
+.presets {
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-4;
+
+  .chip {
+    min-height: 34px;
+    font-size: 0.8rem;
+  }
+}
+
+.price-inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: $space-2;
+
+  label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: $color-text-subtle;
+  }
+
+  input {
+    min-height: 42px;
+    padding: $space-2 $space-3;
+  }
+
+  > span {
+    padding-bottom: 10px;
+    color: $color-text-subtle;
+  }
+}
+
+/* Results ------------------------------------------------------------------*/
+.results {
+  min-width: 0;
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3 $space-5;
+    min-height: 40px;
+    margin-bottom: $space-6;
+    font-size: 0.88rem;
+    color: $color-text-muted;
+  }
+}
+
+.active-chips {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  .chip {
+    min-height: 32px;
+    font-size: 0.78rem;
+
+    app-icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-7 $space-4;
+  transition: opacity $duration;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $space-8 $space-5;
+  }
+
+  &.is-refreshing {
+    opacity: 0.55;
+  }
+}
+
+.more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-9;
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $space-10 $space-5;
+  text-align: center;
+  @include card-surface;
+
+  > app-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: $space-5;
+    color: $color-gold;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: $space-3;
+  }
+
+  p {
+    max-width: 440px;
+    color: $color-text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $space-3;
+    margin-top: $space-4;
+  }
+}

@@ -1,0 +1,239 @@
+<header class="page-head">
+  <div class="container">
+    <nav class="crumbs" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a>
+      <span aria-hidden="true">/</span>
+      @if (activeCategory(); as cat) {
+        <a routerLink="/kolekcia">Kolekcia</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ cat.name }}</span>
+      } @else {
+        <span aria-current="page">Kolekcia</span>
+      }
+    </nav>
+    <h1>{{ activeCategory()?.name ?? 'Kolekcia šperkov' }}</h1>
+    <p class="lead">
+      {{
+        activeCategory()?.description ??
+          'Zásnubné prstene, obrúčky, náhrdelníky a investičné zlato – ručne vyrobené a overené Puncovým úradom SR.'
+      }}
+    </p>
+  </div>
+</header>
+
+<div class="container catalog">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search">
+      <app-icon name="search" />
+      <input
+        type="search"
+        placeholder="Hľadať podľa názvu alebo kódu…"
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+        aria-label="Hľadať šperky"
+      />
+      @if (searchTerm()) {
+        <button type="button" class="search__clear" (click)="clearSearch()" aria-label="Vymazať hľadanie">
+          <app-icon name="close" />
+        </button>
+      }
+    </div>
+    <button type="button" class="btn btn--outline btn--sm toolbar__filters" (click)="filtersOpen.set(true)">
+      <app-icon name="filter" /> Filtre
+      @if (activeFilterCount()) {
+        <span class="num">({{ activeFilterCount() }})</span>
+      }
+    </button>
+    <label class="sort">
+      <span class="visually-hidden">Zoradiť</span>
+      <select class="field__control" [value]="filters().ordering" (change)="setOrdering($event)">
+        @for (o of orderings; track o.value) {
+          <option [value]="o.value" [selected]="o.value === filters().ordering">{{ o.label }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <div class="layout">
+    <!-- Filters sidebar / mobile sheet -->
+    <div class="filters-backdrop" [class.is-open]="filtersOpen()" (click)="filtersOpen.set(false)" aria-hidden="true"></div>
+    <aside class="filters" [class.is-open]="filtersOpen()" aria-label="Filtre">
+      <div class="filters__head">
+        <h2>Filtre</h2>
+        <button type="button" class="icon-btn" (click)="filtersOpen.set(false)" aria-label="Zavrieť filtre">
+          <app-icon name="close" />
+        </button>
+      </div>
+
+      <div class="filters__body">
+        @if (facets.hasValue()) {
+          @let f = facets.value();
+          <fieldset class="facet">
+            <legend>Kategória</legend>
+            @for (opt of f.categories; track opt.value) {
+              <label class="facet__option">
+                <input type="checkbox" [checked]="isChecked('category', opt.value)" (change)="toggle('category', opt.value)" />
+                <span>{{ opt.label }}</span>
+                <span class="facet__count num">{{ opt.count }}</span>
+              </label>
+            }
+          </fieldset>
+
+          <fieldset class="facet">
+            <legend>Kov</legend>
+            @for (opt of f.metal_types; track opt.value) {
+              @if (opt.count > 0 || isChecked('metal_type', opt.value)) {
+                <label class="facet__option">
+                  <input type="checkbox" [checked]="isChecked('metal_type', opt.value)" (change)="toggle('metal_type', opt.value)" />
+                  <span class="swatch" [class]="'swatch--' + opt.value" aria-hidden="true"></span>
+                  <span>{{ opt.label }}</span>
+                  <span class="facet__count num">{{ opt.count }}</span>
+                </label>
+              }
+            }
+          </fieldset>
+
+          <fieldset class="facet">
+            <legend>Drahokam</legend>
+            @for (opt of f.gemstones; track opt.value) {
+              @if (opt.count > 0 || isChecked('primary_gemstone', opt.value)) {
+                <label class="facet__option">
+                  <input
+                    type="checkbox"
+                    [checked]="isChecked('primary_gemstone', opt.value)"
+                    (change)="toggle('primary_gemstone', opt.value)"
+                  />
+                  <span>{{ opt.label }}</span>
+                  <span class="facet__count num">{{ opt.count }}</span>
+                </label>
+              }
+            }
+          </fieldset>
+
+          <fieldset class="facet">
+            <legend>Dostupnosť</legend>
+            @for (opt of f.availability; track opt.value) {
+              <label class="facet__option">
+                <input type="checkbox" [checked]="isChecked('availability', opt.value)" (change)="toggle('availability', opt.value)" />
+                <span>{{ opt.label }}</span>
+                <span class="facet__count num">{{ opt.count }}</span>
+              </label>
+            }
+          </fieldset>
+        } @else if (facets.isLoading()) {
+          @for (s of [1, 2, 3]; track s) {
+            <div class="facet">
+              <div class="skeleton" style="height: 12px; width: 40%; margin-bottom: 16px"></div>
+              <div class="skeleton" style="height: 14px; margin-bottom: 10px"></div>
+              <div class="skeleton" style="height: 14px; width: 80%; margin-bottom: 10px"></div>
+              <div class="skeleton" style="height: 14px; width: 70%"></div>
+            </div>
+          }
+        }
+
+        <fieldset class="facet">
+          <legend>Cena</legend>
+          <div class="presets">
+            @for (p of pricePresets; track p.label) {
+              <button type="button" class="chip" [attr.aria-pressed]="isPresetActive(p)" (click)="togglePreset(p)">
+                {{ p.label }}
+              </button>
+            }
+          </div>
+          <div class="price-inputs">
+            <label>
+              <span>Od (€)</span>
+              <input
+                type="number"
+                min="0"
+                step="100"
+                inputmode="numeric"
+                class="field__control num"
+                [value]="filters().min_price ?? ''"
+                (change)="onPriceInput('min', $event)"
+                placeholder="0"
+              />
+            </label>
+            <span aria-hidden="true">–</span>
+            <label>
+              <span>Do (€)</span>
+              <input
+                type="number"
+                min="0"
+                step="100"
+                inputmode="numeric"
+                class="field__control num"
+                [value]="filters().max_price ?? ''"
+                (change)="onPriceInput('max', $event)"
+                placeholder="10 000"
+              />
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="filters__foot">
+        <button type="button" class="btn btn--ghost" (click)="clearAll()" [disabled]="!activeFilterCount()">Zrušiť všetko</button>
+        <button type="button" class="btn btn--primary" (click)="filtersOpen.set(false)">
+          Zobraziť {{ resultLabel(total()) }}
+        </button>
+      </div>
+    </aside>
+
+    <!-- Results -->
+    <section class="results" aria-live="polite" [attr.aria-busy]="loading()">
+      <div class="results__meta">
+        <span class="num">{{ loaded() ? resultLabel(total()) : 'Načítavam…' }}</span>
+        @if (activeChips().length) {
+          <ul class="active-chips">
+            @for (chip of activeChips(); track chip.label) {
+              <li>
+                <button type="button" class="chip is-active" (click)="chip.remove()" [attr.aria-label]="'Zrušiť filter ' + chip.label">
+                  {{ chip.label }} <app-icon name="close" />
+                </button>
+              </li>
+            }
+            <li><button type="button" class="btn btn--ghost btn--sm" (click)="clearAll()">Zrušiť filtre</button></li>
+          </ul>
+        }
+      </div>
+
+      @if (error()) {
+        <div class="alert alert--error" role="alert">{{ error() }}</div>
+      }
+
+      @if (!loaded()) {
+        <div class="grid">
+          @for (s of skeletons; track $index) {
+            <app-card-skeleton />
+          }
+        </div>
+      } @else if (items().length === 0 && !error()) {
+        <div class="empty">
+          <app-icon name="diamond" />
+          <h2>Pre zvolené filtre sme nenašli žiadny šperk</h2>
+          <p>Skúste upraviť kritériá – alebo nám povedzte, čo hľadáte. Šperk vám radi vyrobíme na mieru.</p>
+          <div class="empty__actions">
+            <button type="button" class="btn btn--outline" (click)="clearAll()">Zrušiť filtre</button>
+            <a routerLink="/na-mieru" class="btn btn--primary">Šperk na mieru</a>
+          </div>
+        </div>
+      } @else {
+        <div class="grid" [class.is-refreshing]="loading()">
+          @for (item of items(); track item.id; let i = $index) {
+            <app-jewelry-card [item]="item" [priority]="i < 3" />
+          }
+        </div>
+        @if (hasMore()) {
+          <div class="more">
+            <p class="num muted">Zobrazených {{ items().length }} z {{ total() }}</p>
+            <button type="button" class="btn btn--outline" (click)="loadMore()" [class.is-loading]="loading()" [disabled]="loading()">
+              Načítať ďalšie šperky
+            </button>
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>
