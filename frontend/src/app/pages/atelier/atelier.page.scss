@@ -1,0 +1,281 @@
+@use 'styles/mixins' as *;
+
+.section--soft {
+  @include section($color-surface-soft);
+}
+
+#kontakt {
+  scroll-margin-top: $header-height;
+}
+
+/* Story --------------------------------------------------------------------*/
+.story {
+  display: grid;
+  gap: $space-9;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1fr;
+    gap: $space-11;
+  }
+
+  &__images {
+    position: relative;
+    padding: 0 $space-8 $space-8 0;
+  }
+
+  &__main {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 200px 200px $radius-sm $radius-sm;
+  }
+
+  &__detail {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 45%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 6px solid $color-bg;
+    border-radius: $radius-sm;
+    box-shadow: $shadow-lift;
+  }
+
+  &__years {
+    position: absolute;
+    left: $space-5;
+    bottom: $space-11;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    background: $color-emerald;
+    color: #fff;
+    text-align: center;
+
+    strong {
+      font-family: $font-serif;
+      font-size: 2.4rem;
+      font-weight: $font-weight-regular;
+      line-height: 1;
+      color: $color-gold;
+    }
+
+    span {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+  }
+
+  &__copy {
+    h2 {
+      margin-bottom: $space-5;
+
+      em {
+        color: $color-gold-hover;
+      }
+    }
+
+    p:not(.lead) {
+      color: $color-text-muted;
+    }
+  }
+}
+
+.signature {
+  display: flex;
+  flex-direction: column;
+  margin-top: $space-6;
+  padding-top: $space-5;
+  @include hairline(top);
+
+  &__name {
+    font-family: $font-serif;
+    font-style: italic;
+    font-size: 1.7rem;
+    color: $color-gold-hover;
+  }
+
+  &__role {
+    font-size: 0.82rem;
+    color: $color-text-muted;
+  }
+}
+
+/* Values & metrics ---------------------------------------------------------*/
+.values {
+  @include reset-list;
+  display: grid;
+  gap: $space-7;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  li {
+    text-align: center;
+  }
+
+  app-icon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto $space-4;
+    color: $color-gold;
+  }
+
+  h3 {
+    margin-bottom: $space-3;
+  }
+
+  p {
+    max-width: 320px;
+    margin-inline: auto;
+    font-size: 0.9rem;
+    color: $color-text-muted;
+  }
+}
+
+.metrics {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-6;
+  margin-top: $space-9;
+  padding-top: $space-8;
+  @include hairline(top, $color-border-strong);
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $space-1;
+  }
+
+  strong {
+    font-family: $font-serif;
+    font-size: 2.3rem;
+    font-weight: $font-weight-regular;
+    color: $color-gold-hover;
+  }
+
+  span {
+    font-size: 0.82rem;
+    color: $color-text-muted;
+  }
+}
+
+/* Contact ------------------------------------------------------------------*/
+.contact {
+  display: grid;
+  gap: $space-9;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1.15fr;
+    gap: $space-10;
+    align-items: start;
+  }
+}
+
+.showroom {
+  h2 {
+    margin-bottom: $space-4;
+  }
+
+  &__cards {
+    display: grid;
+    gap: $space-3;
+    margin: $space-6 0;
+  }
+}
+
+.info-card {
+  display: flex;
+  gap: $space-4;
+  padding: $space-5;
+  @include card-surface;
+  transition: border-color $duration-fast;
+
+  &:hover {
+    border-color: $color-gold;
+  }
+
+  > app-icon {
+    width: 24px;
+    height: 24px;
+    color: $color-gold;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  strong {
+    font-size: 0.68rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $color-text-muted;
+  }
+
+  span {
+    font-size: 1rem;
+  }
+
+  small {
+    color: $color-text-subtle;
+  }
+}
+
+.hours-card {
+  padding: $space-6;
+  background: $color-emerald;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: $radius-sm;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    margin-bottom: $space-4;
+    color: #fff;
+    font-size: 1.4rem;
+
+    app-icon {
+      color: $color-gold;
+    }
+  }
+
+  dl {
+    margin: 0 0 $space-4;
+  }
+
+  dl div {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-2 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  dd {
+    margin: 0;
+    color: #fff;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.82rem;
+  }
+}

@@ -1,0 +1,179 @@
+<section class="page-hero">
+  <img class="page-hero__image" [src]="config.images.atelier | sized: 2000" alt="" />
+  <div class="page-hero__content">
+    <nav class="crumbs" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a><span aria-hidden="true">/</span><span>Ateliér</span>
+    </nav>
+    <span class="eyebrow">Náš ateliér · od {{ config.brand.foundedYear }}</span>
+    <h1>{{ config.atelier.headline }}</h1>
+    <p class="lead">{{ config.brand.description }}</p>
+    <div class="page-hero__ctas">
+      <a href="#kontakt" class="btn btn--gold">Dohodnúť konzultáciu <app-icon name="arrow-right" /></a>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="section">
+  <div class="container story">
+    <div class="story__images">
+      <img class="story__main" [src]="config.images.showroom | sized: 1000" alt="Šperky z nášho ateliéru" loading="lazy" />
+      <img class="story__detail" [src]="config.images.atelierDetail | sized: 600" alt="" loading="lazy" />
+      <div class="story__years">
+        <strong class="num">{{ yearsActive }}</strong>
+        <span>rokov remesla</span>
+      </div>
+    </div>
+    <div class="story__copy">
+      <span class="eyebrow">Náš príbeh</span>
+      <h2>Remeslo, ktoré má <em>dušu</em></h2>
+      @for (p of config.atelier.story; track $index) {
+        <p [class.lead]="$first">{{ p }}</p>
+      }
+      <div class="signature">
+        <span class="signature__name">{{ config.atelier.founder }}</span>
+        <span class="signature__role">{{ config.atelier.founderRole }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="section--soft">
+  <div class="container">
+    <ul class="values">
+      @for (v of config.atelier.values; track v.title) {
+        <li>
+          <app-icon [name]="v.icon" />
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.text }}</p>
+        </li>
+      }
+    </ul>
+    <ul class="metrics">
+      @for (m of config.trustMetrics; track m.label) {
+        <li>
+          <strong class="num">{{ m.value }}</strong>
+          <span>{{ m.label }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- SHOWROOM & CONTACT -->
+<section class="section" id="kontakt">
+  <div class="container contact">
+    <div class="showroom">
+      <span class="eyebrow">Showroom & kontakt</span>
+      <h2>Navštívte nás v butiku</h2>
+      <p class="lead">Šperky si vyskúšate v pokoji a súkromí. Na konzultáciu si vyhradíme čas len pre vás.</p>
+
+      <div class="showroom__cards">
+        <a class="info-card" [href]="config.contact.mapUrl" target="_blank" rel="noopener">
+          <app-icon name="pin" />
+          <div>
+            <strong>Adresa</strong>
+            <span>{{ config.contact.address.street }}, <span class="num">{{ config.contact.address.zip }}</span> {{ config.contact.address.city }}</span>
+            <small>{{ config.contact.parkingNote }}</small>
+          </div>
+        </a>
+        <a class="info-card" [href]="config.contact.phoneHref">
+          <app-icon name="phone" />
+          <div>
+            <strong>Telefón</strong>
+            <span class="num">{{ config.contact.phone }}</span>
+            <small class="num">Mobil: {{ config.contact.mobile }}</small>
+          </div>
+        </a>
+        <a class="info-card" [href]="'mailto:' + config.contact.email">
+          <app-icon name="mail" />
+          <div>
+            <strong>E-mail</strong>
+            <span>{{ config.contact.email }}</span>
+            <small>Odpovedáme do 24 hodín</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="hours-card">
+        <h3><app-icon name="clock" /> Otváracie hodiny</h3>
+        <dl>
+          @for (h of config.openingHours; track h.days) {
+            <div>
+              <dt>{{ h.days }}</dt>
+              <dd class="num">{{ h.hours }}</dd>
+            </div>
+          }
+        </dl>
+        <p>{{ config.openingHoursNote }}</p>
+      </div>
+    </div>
+
+    <div class="form-card">
+      @if (submitted()) {
+        <div class="form-success" role="status">
+          <span class="form-success__icon"><app-icon name="check" /></span>
+          <h3 class="h3">Ďakujeme za správu</h3>
+          <p>Ozveme sa vám do 24 hodín a potvrdíme termín. Tešíme sa na stretnutie v ateliéri.</p>
+          <button type="button" class="btn btn--ghost" (click)="restart()">Napísať ďalšiu správu</button>
+        </div>
+      } @else {
+        <h2 class="h3 form-card__title">Dohodnite si konzultáciu</h2>
+        <p class="form-card__intro">Napíšte nám, s čím vám môžeme pomôcť, a navrhnite termín, ktorý vám vyhovuje.</p>
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label class="field__label" for="c-topic">Téma</label>
+              <select id="c-topic" class="field__control" formControlName="topic">
+                @for (t of topics; track t.value) {
+                  <option [value]="t.value">{{ t.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="c-date">Preferovaný termín <span class="optional">(nepovinné)</span></label>
+              <input id="c-date" type="date" class="field__control num" formControlName="preferred_date" [min]="minDate" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label" for="c-message">Správa</label>
+              <textarea id="c-message" class="field__control" formControlName="message" rows="5" placeholder="S čím vám môžeme pomôcť?"></textarea>
+              <app-field-error [control]="form.controls.message" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label" for="c-name">Meno a priezvisko</label>
+              <input id="c-name" class="field__control" formControlName="client_name" autocomplete="name" />
+              <app-field-error [control]="form.controls.client_name" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="c-email">E-mail</label>
+              <input id="c-email" type="email" class="field__control" formControlName="email" autocomplete="email" />
+              <app-field-error [control]="form.controls.email" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="c-phone">Telefón <span class="optional">(nepovinné)</span></label>
+              <input id="c-phone" type="tel" class="field__control" formControlName="phone" autocomplete="tel" placeholder="+421 9xx xxx xxx" />
+              <app-field-error [control]="form.controls.phone" />
+            </div>
+            <div class="field field--full">
+              <label class="check">
+                <input type="checkbox" formControlName="consent" />
+                <span>Súhlasím so spracovaním osobných údajov na účel vybavenia správy. {{ config.legal.gdpr }}</span>
+              </label>
+              <app-field-error [control]="form.controls.consent" />
+            </div>
+          </div>
+          @if (error()) {
+            <p class="alert alert--error" role="alert">{{ error() }}</p>
+          }
+          <div class="form-card__actions">
+            <span></span>
+            <button type="submit" class="btn btn--primary" [class.is-loading]="submitting()" [disabled]="submitting()">
+              Odoslať správu
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</section>
