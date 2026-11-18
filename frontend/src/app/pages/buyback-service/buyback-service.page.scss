@@ -1,0 +1,307 @@
+@use 'styles/mixins' as *;
+
+.section--soft {
+  @include section($color-surface-soft);
+}
+
+#dopyt-servis,
+#servis,
+#kalkulacka {
+  scroll-margin-top: $header-height;
+}
+
+/* Calculator ---------------------------------------------------------------*/
+.calc-layout {
+  display: grid;
+  gap: $space-8;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1fr;
+    gap: $space-10;
+    align-items: start;
+  }
+
+  h2 {
+    margin-bottom: $space-4;
+  }
+}
+
+.rates {
+  width: 100%;
+  margin-top: $space-6;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+
+  th,
+  td {
+    padding: $space-3 $space-2;
+    text-align: left;
+    @include hairline;
+  }
+
+  thead th {
+    font-size: 0.66rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $color-text-muted;
+  }
+
+  td:last-child,
+  th:last-child {
+    text-align: right;
+  }
+
+  tbody th {
+    font-weight: $font-weight-medium;
+  }
+
+  tr.is-active {
+    background: $color-gold-soft;
+  }
+
+  &__note {
+    margin-top: $space-4;
+    font-size: 0.8rem;
+    color: $color-text-subtle;
+  }
+}
+
+.calc {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  padding: $space-6 $space-5;
+  @include card-surface;
+  box-shadow: $shadow-lift;
+
+  @include respond-to(md) {
+    padding: $space-8;
+  }
+
+  &__purity {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $space-2;
+  }
+
+  &__weight {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+
+    input[type='range'] {
+      flex: 1;
+      min-width: 0;
+      accent-color: $color-gold;
+    }
+
+    .field__control {
+      width: 100px;
+      text-align: right;
+    }
+  }
+
+  &__unit {
+    color: $color-text-muted;
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-6 $space-4;
+    text-align: center;
+    background: linear-gradient(180deg, $color-gold-soft, $color-surface);
+    border-radius: $radius-sm;
+
+    .eyebrow {
+      margin: 0;
+    }
+
+    strong {
+      font-family: $font-serif;
+      font-size: clamp(2.6rem, 6vw, 3.6rem);
+      font-weight: $font-weight-regular;
+      line-height: 1.1;
+    }
+
+    span:last-child {
+      font-size: 0.82rem;
+    }
+  }
+}
+
+.purity {
+  @include reset-button;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: $space-3;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-sm;
+  transition: all $duration-fast;
+
+  strong {
+    font-family: $font-serif;
+    font-size: 1.5rem;
+    font-weight: $font-weight-medium;
+  }
+
+  span {
+    font-size: 0.74rem;
+    color: $color-text-muted;
+  }
+
+  &:hover {
+    border-color: $color-text;
+  }
+
+  &.is-active {
+    background: $color-emerald;
+    border-color: $color-emerald;
+    color: #fff;
+
+    span {
+      color: rgba(255, 255, 255, 0.75);
+    }
+  }
+}
+
+/* Buyback steps ------------------------------------------------------------*/
+.buy-steps {
+  @include reset-list;
+  display: grid;
+  gap: $space-5;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  li {
+    position: relative;
+    padding: $space-7 $space-6;
+    @include card-surface;
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: $space-5;
+    border-radius: 50%;
+    background: $color-emerald-soft;
+    color: $color-emerald;
+
+    app-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__num {
+    position: absolute;
+    top: $space-6;
+    right: $space-6;
+    font-family: $font-serif;
+    font-size: 2.2rem;
+    color: $color-border-strong;
+  }
+
+  h3 {
+    margin-bottom: $space-3;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: $color-text-muted;
+  }
+}
+
+/* Services -----------------------------------------------------------------*/
+.services-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-5;
+  margin-bottom: $space-8;
+
+  .section-head {
+    margin-bottom: 0;
+  }
+}
+
+.services {
+  @include reset-list;
+  display: grid;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 1fr;
+    column-gap: $space-9;
+  }
+}
+
+.service {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: $space-4;
+  align-items: start;
+  padding: $space-5 0;
+  @include hairline;
+
+  > app-icon {
+    width: 28px;
+    height: 28px;
+    color: $color-gold;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: $space-1;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: $color-text-muted;
+  }
+
+  &__price {
+    font-size: 0.85rem;
+    font-weight: $font-weight-medium;
+    color: $color-emerald;
+    white-space: nowrap;
+  }
+}
+
+/* Form ---------------------------------------------------------------------*/
+.services-choice {
+  margin: 0 0 $space-6;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: $space-3;
+  }
+
+  &__grid {
+    display: grid;
+    gap: $space-3;
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+.small-note {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 0.84rem;
+}

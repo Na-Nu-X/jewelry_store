@@ -1,0 +1,239 @@
+<section class="page-hero">
+  <img class="page-hero__image" [src]="config.images.buyback | sized: 2000" alt="" />
+  <div class="page-hero__content">
+    <nav class="crumbs" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a><span aria-hidden="true">/</span><span>Výkup & servis</span>
+    </nav>
+    <span class="eyebrow">Výkup zlata · zlatnícky servis</span>
+    <h1>Férový výkup zlata a <em>starostlivosť</em> o vaše šperky</h1>
+    <p class="lead">
+      Transparentné ceny podľa aktuálneho kurzu, overenie rýdzosti priamo pred vami a výplata na počkanie. K tomu
+      kompletný zlatnícky servis od opráv po rhodiovanie.
+    </p>
+    <div class="page-hero__ctas">
+      <a href="#kalkulacka" class="btn btn--gold">Vypočítať cenu <app-icon name="arrow-right" /></a>
+      <a href="#servis" class="btn btn--light">Zlatnícky servis</a>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="section" id="kalkulacka">
+  <div class="container calc-layout">
+    <div>
+      <span class="eyebrow">Výkup zlomkového a investičného zlata</span>
+      <h2>Orientačná kalkulačka výkupu</h2>
+      <p class="lead">Zvoľte rýdzosť a hmotnosť – hneď uvidíte orientačnú sumu, ktorú vám vyplatíme.</p>
+
+      <table class="rates num">
+        <caption class="visually-hidden">Výkupné ceny zlata</caption>
+        <thead>
+          <tr>
+            <th scope="col">Rýdzosť</th>
+            <th scope="col">Punc</th>
+            <th scope="col">Výkup / g</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rates; track r.id) {
+            <tr [class.is-active]="r.id === rateId()">
+              <th scope="row">{{ r.label }}</th>
+              <td>{{ r.fineness }}</td>
+              <td>{{ r.pricePerGram | eur }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="rates__note">Aktualizované {{ config.buyback.updatedAt }}. {{ config.buyback.note }}</p>
+    </div>
+
+    <div class="calc">
+      <div class="field">
+        <span class="field__label">Rýdzosť zlata</span>
+        <div class="calc__purity" role="radiogroup" aria-label="Rýdzosť zlata">
+          @for (r of rates; track r.id) {
+            <button
+              type="button"
+              role="radio"
+              class="purity"
+              [class.is-active]="r.id === rateId()"
+              [attr.aria-checked]="r.id === rateId()"
+              (click)="rateId.set(r.id)"
+            >
+              <strong class="num">{{ r.id }}</strong>
+              <span class="num">{{ r.fineness }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="calc-weight">Hmotnosť v gramoch</label>
+        <div class="calc__weight">
+          <input
+            type="range"
+            [min]="weightMin"
+            max="100"
+            step="0.5"
+            [value]="weight()"
+            (input)="onWeight($event)"
+            aria-label="Posuvník hmotnosti"
+          />
+          <input
+            id="calc-weight"
+            type="number"
+            class="field__control num"
+            inputmode="decimal"
+            min="0"
+            [max]="weightMax"
+            step="0.1"
+            [value]="weight()"
+            (input)="onWeight($event)"
+          />
+          <span class="calc__unit">g</span>
+        </div>
+      </div>
+
+      <div class="calc__result" aria-live="polite">
+        <span class="eyebrow">Orientačná výplata</span>
+        <strong class="num">{{ estimate() | eur }}</strong>
+        <span class="num muted">{{ weight() | decimal }} g × {{ rate().pricePerGram | eur }} ({{ rate().fineness }})</span>
+      </div>
+
+      <button type="button" class="btn btn--primary btn--block" (click)="requestBuyback()">
+        Dohodnúť výkup <app-icon name="arrow-right" />
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- HOW BUYBACK WORKS -->
+<section class="section--soft">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Ako prebieha výkup</span>
+      <h2>Rýchlo, diskrétne a transparentne</h2>
+    </div>
+    <ol class="buy-steps">
+      @for (s of buybackSteps; track s.title; let i = $index) {
+        <li>
+          <span class="buy-steps__icon"><app-icon [name]="s.icon" /></span>
+          <span class="buy-steps__num num">0{{ i + 1 }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section" id="servis">
+  <div class="container">
+    <div class="services-head">
+      <div class="section-head">
+        <span class="eyebrow">Zlatnícky servis</span>
+        <h2>Opravy, úpravy a renovácie</h2>
+        <p class="lead">Postaráme sa o šperky kúpené u nás aj inde. Čistenie šperkov z nášho ateliéru je doživotne zadarmo.</p>
+      </div>
+      <button type="button" class="btn btn--outline" (click)="requestService()">Objednať servis</button>
+    </div>
+    <ul class="services">
+      @for (s of services; track s.title) {
+        <li class="service">
+          <app-icon [name]="s.icon" />
+          <div>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.text }}</p>
+          </div>
+          <span class="service__price num">{{ s.price }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- INQUIRY FORM -->
+<section class="section--soft" id="dopyt-servis">
+  <div class="container container--narrow">
+    <div class="form-card">
+      @if (submitted()) {
+        <div class="form-success" role="status">
+          <span class="form-success__icon"><app-icon name="check" /></span>
+          <h3 class="h3">Ďakujeme, dopyt sme prijali</h3>
+          <p>Ozveme sa vám do 24 hodín. Na výkup zlata môžete prísť aj bez objednania počas otváracích hodín.</p>
+          <button type="button" class="btn btn--ghost" (click)="restart()">Odoslať ďalší dopyt</button>
+        </div>
+      } @else {
+        <h2 class="h3 form-card__title">Dopyt na výkup alebo servis</h2>
+        <p class="form-card__intro">Vyplňte krátky formulár a dohodneme si termín alebo vám pošleme cenovú ponuku.</p>
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <fieldset class="services-choice">
+            <legend class="field__label">Služba</legend>
+            <div class="services-choice__grid">
+              @for (opt of serviceOptions; track opt.value) {
+                <label class="choice">
+                  <input type="radio" formControlName="service_type" [value]="opt.value" />
+                  <span class="choice__title">{{ opt.label }}</span>
+                  <span class="choice__desc">{{ opt.description }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <div class="form-grid">
+            @if (serviceType() === 'vykup_zlata') {
+              <div class="field">
+                <label class="field__label" for="s-weight">Odhadovaná hmotnosť (g) <span class="optional">(nepovinné)</span></label>
+                <input id="s-weight" type="number" min="0" step="0.1" class="field__control num" formControlName="estimated_weight_grams" />
+                <app-field-error [control]="form.controls.estimated_weight_grams" />
+              </div>
+            }
+            <div class="field" [class.field--full]="serviceType() !== 'vykup_zlata'">
+              <label class="field__label" for="s-name">Meno a priezvisko</label>
+              <input id="s-name" class="field__control" formControlName="client_name" autocomplete="name" />
+              <app-field-error [control]="form.controls.client_name" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="s-phone">Telefón</label>
+              <input id="s-phone" type="tel" class="field__control" formControlName="phone" autocomplete="tel" placeholder="+421 9xx xxx xxx" />
+              <app-field-error [control]="form.controls.phone" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="s-email">E-mail</label>
+              <input id="s-email" type="email" class="field__control" formControlName="email" autocomplete="email" />
+              <app-field-error [control]="form.controls.email" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label" for="s-note">Poznámka <span class="optional">(nepovinné)</span></label>
+              <textarea
+                id="s-note"
+                class="field__control"
+                formControlName="note"
+                rows="4"
+                placeholder="Napr. o aký šperk ide, čo je potrebné opraviť, preferovaný termín…"
+              ></textarea>
+            </div>
+            <div class="field field--full">
+              <label class="check">
+                <input type="checkbox" formControlName="consent" />
+                <span>Súhlasím so spracovaním osobných údajov na účel vybavenia dopytu. {{ config.legal.gdpr }}</span>
+              </label>
+              <app-field-error [control]="form.controls.consent" />
+            </div>
+          </div>
+
+          @if (error()) {
+            <p class="alert alert--error" role="alert">{{ error() }}</p>
+          }
+          <div class="form-card__actions">
+            <span class="muted small-note"><app-icon name="clock" /> Odpovedáme do 24 hodín</span>
+            <button type="submit" class="btn btn--primary" [class.is-loading]="submitting()" [disabled]="submitting()">
+              Odoslať dopyt
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</section>
